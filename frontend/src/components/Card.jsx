@@ -1,9 +1,7 @@
 const Card = ({ children }) => {
     return (
-      <div className="bg-white w-150 border shadow-sm rounded-sm hover:shadow-lg transition-all duration-300">
-        <div className="p-3">
+      <div className="flex flex-col flex-grow bg-white border shadow-sm rounded-sm hover:shadow-lg transition-all duration-300">
         {children}
-        </div>
       </div>
     );
   };

@@ -8,9 +8,9 @@ const HomeScreen = () => {
             Latest Product
         </div>
 
-        <div className='grid grid-cols-1 sm:grid-cols-2  lg:grid-cols-4 gap-2'>
+        <div className='grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2'>
             {products.map((items) =>
-                <div key={items._id}>
+                <div key={items._id} className='flex flex-col items-center'>
                     <Product product={items} />
                 </div>)}
         </div>

@@ -3,13 +3,13 @@ import Card from './Card';
 
 const Product = ({product}) => {
     return (
-        <div className="p-4">
+        <div className="flex flex-col h-full p-4 w-10/12 sm:w-full">
           <Card>
             <a href={`/product/${product._id}`}>
               <img
                 src={product.image}
                 alt={product.name}
-                className="w-150 h-64 object-cover"
+                className="w-full h-auto object-cover"
               />
             </a>
     
