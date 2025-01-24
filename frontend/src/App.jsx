@@ -1,7 +1,11 @@
+import Footer from "./components/Footer";
+import Header from "./components/Header";
+import HomeScreen from "./screens/HomeScreen";
+
 export default function App() {
-  return (
-    <h1 className="text-3xl font-bold underline">
-      Welcome To Shopinn!
-    </h1>
-  )
+  return <>
+    <Header />
+    <HomeScreen />
+    <Footer />
+  </>
 }
