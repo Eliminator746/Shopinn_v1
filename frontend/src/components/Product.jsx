@@ -18,7 +18,7 @@ const Product = ({ product }) => {
         <div className="p-4">
           <Link
             to={`/product/${product._id}`}
-            className="text-xl font-semibold text-gray-800 hover:text-indigo-600 transition duration-200"
+            className="text-xl font-semibold text-gray-800 hover:text-indigo-600 transition duration-200 truncate block max-w-full"
           >
             {product.name}
           </Link>
