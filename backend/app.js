@@ -30,4 +30,12 @@ app.use(cookieParser());
 
 // ------------------------------------------------------------------------------------------------------------------------
 
+//routes import
+import productRouter from './src/routes/product.router.js';
+
+app.use("/api/v1", productRouter)
+
+
+// http://localhost:8000/api/v1/{productRouter}
+
 export default app; 

@@ -1,13 +1,32 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import { useParams } from 'react-router-dom'
-import products from '../products';
+// import products from '../products';
 import Rating from '../components/Rating';
 import { FaArrowLeft } from "react-icons/fa";
 import { Link } from 'react-router-dom';
+import axios from 'axios';
 
 const ProductDetails = () => {
-    const { productId } = useParams();
-    const product = products.find(item => item._id === productId);
+    const [product, setProduct]=useState();
+    const productId = useParams();
+    
+    useEffect(()=>{
+        
+        async function fetchProduct() {
+            try {
+                
+                const { data } = await axios.get(`http://localhost:8000/api/v1/products/${productId}`);
+                // console.log(data);
+
+                setProduct(data.product)
+            } catch (error) {
+                console.error('Error fetching product:', error);
+            }
+        }
+        fetchProduct();
+
+    },[productId])
+    
     return (
         <div className='flex flex-col gap-4 p-6'>
 

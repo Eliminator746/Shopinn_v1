@@ -1,8 +1,27 @@
-import React from 'react'
-import products from '../products'
+import React, { useEffect, useState } from 'react'
 import Product from '../components/Product'
+import axios from 'axios'
+
+
+
 
 const HomeScreen = () => {
+    const [products, setProducts] = useState([])
+
+    useEffect(() => {
+
+        const fetchProducts = async () => {
+            try {
+                const { data } = await axios.get('http://localhost:8000/api/v1/products');
+                setProducts(data.products);
+            } catch (error) {
+                console.error('Error fetching products:', error);
+            }
+        }
+
+        fetchProducts();
+    },[]);
+
     return <>
         <div className="text-3xl font-semibold text-gray-800 pt-4">
             Latest Product
