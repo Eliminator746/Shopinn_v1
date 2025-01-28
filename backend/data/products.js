@@ -1,10 +1,9 @@
 const products = [
   {
-    _id: '1',
     name: 'Airpods Wireless Bluetooth Headphones',
     image: '/images/airpods.jpg',
     description:
-      'Bluetooth technology lets you connect it with compatible devices wirelessly High-quality AAC audio offers immersive listening experience Built-in microphone allows you to take calls while working',
+      'Bluetooth technology lets you connect it with compatible devices wirelessly. High-quality AAC audio offers immersive listening experience. Built-in microphone allows you to take calls while working.',
     brand: 'Apple',
     category: 'Electronics',
     price: 89.99,
@@ -13,11 +12,10 @@ const products = [
     numReviews: 12,
   },
   {
-    _id: '2',
     name: 'iPhone 11 Pro 256GB Memory',
     image: '/images/phone.jpg',
     description:
-      'Introducing the iPhone 11 Pro. A transformative triple-camera system that adds tons of capability without complexity. An unprecedented leap in battery life',
+      'Introducing the iPhone 11 Pro. A transformative triple-camera system that adds tons of capability without complexity. An unprecedented leap in battery life.',
     brand: 'Apple',
     category: 'Electronics',
     price: 599.99,
@@ -26,37 +24,34 @@ const products = [
     numReviews: 8,
   },
   {
-    _id: '3',
     name: 'Cannon EOS 80D DSLR Camera',
     image: '/images/camera.jpg',
     description:
-      'Characterized by versatile imaging specs, the Canon EOS 80D further clarifies itself using a pair of robust focusing systems and an intuitive design',
-    brand: 'Cannon',
+      'Characterized by versatile imaging specs, the Canon EOS 80D further clarifies itself using a pair of robust focusing systems and an intuitive design.',
+    brand: 'Canon',
     category: 'Electronics',
     price: 929.99,
     countInStock: 5,
-    rating: 3,
+    rating: 3.0,
     numReviews: 12,
   },
   {
-    _id: '4',
     name: 'Sony Playstation 4 Pro White Version',
     image: '/images/playstation.jpg',
     description:
-      'The ultimate home entertainment center starts with PlayStation. Whether you are into gaming, HD movies, television, music',
+      'The ultimate home entertainment center starts with PlayStation. Whether you are into gaming, HD movies, television, music.',
     brand: 'Sony',
     category: 'Electronics',
     price: 399.99,
     countInStock: 11,
-    rating: 5,
+    rating: 5.0,
     numReviews: 12,
   },
   {
-    _id: '5',
     name: 'Logitech G-Series Gaming Mouse',
     image: '/images/mouse.jpg',
     description:
-      'Get a better handle on your games with this Logitech LIGHTSYNC gaming mouse. The six programmable buttons allow customization for a smooth playing experience',
+      'Get a better handle on your games with this Logitech LIGHTSYNC gaming mouse. The six programmable buttons allow customization for a smooth playing experience.',
     brand: 'Logitech',
     category: 'Electronics',
     price: 49.99,
@@ -65,18 +60,102 @@ const products = [
     numReviews: 10,
   },
   {
-    _id: '6',
     name: 'Amazon Echo Dot 3rd Generation',
     image: '/images/alexa.jpg',
     description:
-      'Meet Echo Dot - Our most popular smart speaker with a fabric design. It is our most compact smart speaker that fits perfectly into small space',
+      'Meet Echo Dot - Our most popular smart speaker with a fabric design. It is our most compact smart speaker that fits perfectly into small spaces.',
     brand: 'Amazon',
     category: 'Electronics',
     price: 29.99,
     countInStock: 0,
-    rating: 4,
+    rating: 4.0,
     numReviews: 12,
   },
-]
+  // New products
+  {
+    name: 'Samsung Galaxy S21 128GB',
+    image: '/images/galaxy.jpg',
+    description:
+      'The Samsung Galaxy S21 features a stunning display, powerful camera system, and long-lasting battery.',
+    brand: 'Samsung',
+    category: 'Electronics',
+    price: 799.99,
+    countInStock: 15,
+    rating: 4.7,
+    numReviews: 25,
+  },
+  {
+    name: 'Apple Watch Series 6',
+    image: '/images/apple-watch.jpg',
+    description:
+      'The Apple Watch Series 6 comes with a blood oxygen sensor, heart rate monitor, and customizable faces.',
+    brand: 'Apple',
+    category: 'Electronics',
+    price: 399.99,
+    countInStock: 10,
+    rating: 4.8,
+    numReviews: 30,
+  },
+  {
+    name: 'Dell XPS 13 Laptop',
+    image: '/images/dell-laptop.jpg',
+    description:
+      'The Dell XPS 13 is known for its ultra-thin design, high performance, and long battery life.',
+    brand: 'Dell',
+    category: 'Electronics',
+    price: 999.99,
+    countInStock: 5,
+    rating: 4.5,
+    numReviews: 18,
+  },
+  {
+    name: 'Nikon D3500 DSLR Camera',
+    image: '/images/nikon-camera.jpg',
+    description:
+      'The Nikon D3500 is a beginner-friendly DSLR camera that delivers stunning photos and videos with ease.',
+    brand: 'Nikon',
+    category: 'Electronics',
+    price: 499.99,
+    countInStock: 8,
+    rating: 4.6,
+    numReviews: 15,
+  },
+  {
+    name: 'Bose QuietComfort 35 II',
+    image: '/images/bose-headphones.jpg',
+    description:
+      'The Bose QuietComfort 35 II offers exceptional noise cancellation and high-quality sound for a premium listening experience.',
+    brand: 'Bose',
+    category: 'Electronics',
+    price: 299.99,
+    countInStock: 6,
+    rating: 4.7,
+    numReviews: 20,
+  },
+  {
+    name: 'Fitbit Charge 4 Fitness Tracker',
+    image: '/images/fitbit.jpg',
+    description:
+      'The Fitbit Charge 4 comes with built-in GPS, heart rate monitoring, and sleep tracking for your fitness journey.',
+    brand: 'Fitbit',
+    category: 'Electronics',
+    price: 129.99,
+    countInStock: 12,
+    rating: 4.4,
+    numReviews: 14,
+  },
+  {
+    name: 'Google Nest Hub Max',
+    image: '/images/google-hub.jpg',
+    description:
+      'The Google Nest Hub Max is a smart display with a camera, perfect for video calls and controlling your smart home.',
+    brand: 'Google',
+    category: 'Electronics',
+    price: 229.99,
+    countInStock: 10,
+    rating: 4.3,
+    numReviews: 17,
+  },
+];
 
-export default products
+export default products;
