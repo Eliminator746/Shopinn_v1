@@ -1,29 +1,13 @@
 import { Router } from 'express';
-import products from '../../data/products.js';
-import { ApiError } from '../utils/ApiError.js'
+// import products from '../../data/products.js';
+import { getProducts, getProductById } from '../controller/product.controller.js'
 
 const router = Router();
 
 // Get all products
-router.get('/products', (req, res) => {
-  return res.
-  status(200).
-  json({ products });
-});
+router.route('/products').get(getProducts);
 
 // Get a single product by ID
-router.get('/products/:productId', (req, res) => {
-  const { productId } = req.params;
-
-  const singleProduct = products.find((p) => p._id === productId);
-
-  if (!singleProduct) {
-    throw new ApiError(404,'Product not found')
-  }
-
-  return res
-  .status(200)
-  .json({ singleProduct });
-});
+router.route('/products/:productId').get(getProductById);
 
 export default router;
