@@ -7,25 +7,29 @@ import { Link } from 'react-router-dom';
 import axios from 'axios';
 
 const ProductDetails = () => {
-    const [product, setProduct]=useState();
-    const productId = useParams();
-    
-    useEffect(()=>{
-        
+    const [product, setProduct] = useState();
+    const { productId } = useParams();
+
+    useEffect(() => {
+
         async function fetchProduct() {
             try {
-                
                 const { data } = await axios.get(`http://localhost:8000/api/v1/products/${productId}`);
-                // console.log(data);
+                setProduct(data.singleProduct)
 
-                setProduct(data.product)
             } catch (error) {
                 console.error('Error fetching product:', error);
             }
         }
+
         fetchProduct();
 
-    },[productId])
+    }, [productId])
+
+    if (!product) {
+        return <h2>🌀 Loading...</h2>;
+    }
+
     
     return (
         <div className='flex flex-col gap-4 p-6'>
