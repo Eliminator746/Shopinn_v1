@@ -1,39 +1,37 @@
-import React, { useEffect, useState } from 'react'
-import Product from '../components/Product'
-import axios from 'axios'
-
+import React from 'react';
+import { useGetProductsQuery } from '../features/productsApiSlice.js';
+import Product from '../components/Product';
 
 
 
 const HomeScreen = () => {
-    const [products, setProducts] = useState([])
 
-    useEffect(() => {
+    const { data: products, isLoading, error } = useGetProductsQuery();
+    // We renamed data as products
 
-        const fetchProducts = async () => {
-            try {
-                const { data } = await axios.get('http://localhost:8000/api/v1/products');
-                setProducts(data.products);
-            } catch (error) {
-                console.error('Error fetching products:', error);
+    return (
+        <>
+            {isLoading ? (
+                <h2>Loading...</h2>
+            ) : error ? (
+                <div>{error?.data?.message || error.error}</div>
+            ) : (
+                <>
+                    <div className="text-3xl font-semibold text-gray-800 pt-4">
+                        Latest Product
+                    </div>
+
+                    <div className='grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2'>
+                        {products.map((items) =>
+                            <div key={items._id} className='flex flex-col items-center'>
+                                <Product product={items} />
+                            </div>)}
+                    </div>
+                </>
+            )
             }
-        }
-
-        fetchProducts();
-    },[]);
-
-    return <>
-        <div className="text-3xl font-semibold text-gray-800 pt-4">
-            Latest Product
-        </div>
-
-        <div className='grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2'>
-            {products.map((items) =>
-                <div key={items._id} className='flex flex-col items-center'>
-                    <Product product={items} />
-                </div>)}
-        </div>
-    </>
+        </>
+    )
 }
 
 export default HomeScreen
