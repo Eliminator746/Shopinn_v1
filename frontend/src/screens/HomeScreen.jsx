@@ -1,6 +1,7 @@
 import React from 'react';
 import { useGetProductsQuery } from '../features/productsApiSlice.js';
 import Product from '../components/Product';
+import Message from '../components/Message';
 
 
 
@@ -14,7 +15,7 @@ const HomeScreen = () => {
             {isLoading ? (
                 <h2>Loading...</h2>
             ) : error ? (
-                <div>{error?.data?.message || error.error}</div>
+                <Message variant='danger'>{error?.data?.message || error.error}</Message>
             ) : (
                 <>
                     <div className="text-3xl font-semibold text-gray-800 pt-4">
