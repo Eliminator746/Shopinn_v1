@@ -7,6 +7,7 @@ import { Link } from 'react-router-dom';
 import { useGetProductDetailsQuery } from '../features/productsApiSlice.js'
 import Message from '../components/Message'
 import { addToCart } from '../features/cartSlice.js'
+import { useNavigate } from 'react-router-dom'
 
 
 const ProductDetails = () => {
@@ -16,11 +17,13 @@ const ProductDetails = () => {
     
     const [quantity, setQuantity] = useState(1)
     const dispatch = useDispatch()
+    const navigate= useNavigate()
 
 
     const cart = useSelector((state) => console.log(state.cart.cartItems));
     const addToCartHandler = () => {
         dispatch(addToCart({ ...product, quantity }))
+        navigate('/cart')
     }
 
     return (
