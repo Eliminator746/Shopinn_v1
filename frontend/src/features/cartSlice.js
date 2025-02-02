@@ -14,10 +14,10 @@
 // 6. Add this state to Local Storage
 //---------------------------------------------------------------------------------------------------------------------
 
-import { createSlice, nanoid } from '@reduxjs/toolkit';
+import { createSlice } from '@reduxjs/toolkit';
 
 const initialState = localStorage.getItem('cart')
-  ? JSON.parse(localStorage.getItems('cart'))
+  ? JSON.parse(localStorage.getItem('cart'))
   : { cartItems: [] };
 
 const addDecimal = (item) => (Math.round(item * 100) / 100).toFixed(2);
@@ -36,36 +36,38 @@ const cartSlice = createSlice({
         // increase the quantity of that product
         state.cartItems = state.cartItems.map((items) =>
           items._id === product._id
-            ? { ...items, quantity: items.quantity + 1 }
+            ? { ...items, quantity: items.quantity + product.quantity }
             : items
         );
       } else {
         // Update quantity
-        state.cartItems = [...state.cartItems, { ...product, quantity: 1 }];
+        state.cartItems = [...state.cartItems, product];
 
         // Calculate itemPrice
-        state.itemPrice = addDecimal(
-          state.cartItems.reduce((acc, item) => {
-            return acc + item.price * item.quantity;
-          }, 0)
+        const itemsPrice = state.cartItems.reduce(
+          (acc, item) => acc + (item.price * 100 * item.quantity) / 100,
+          0
         );
+        state.itemPrice = addDecimal(itemsPrice);
 
         // Calculate ShippingPrice
-        state.shippingPrice = addDecimal( state.itemPrice > 100 ? 0 : 10 );
+        const shippingPrice = itemsPrice > 100 ? 0 : 10;
+        state.shippingPrice = addDecimal(shippingPrice);
 
         // Calculate TaxPrice
-        state.taxPrice = addDecimal( state.itemPrice * 0.15 );
+        const taxPrice = 0.15 * itemsPrice;
+        state.taxPrice = addDecimal(taxPrice);
 
         // Calculate Total
-        state.totalPrice =
-          addDecimal(state.itemPrice + state.shippingPrice + state.taxPrice);
+        const totalPrice = itemsPrice + shippingPrice + taxPrice;
+        state.totalPrice = addDecimal(totalPrice);
 
         // Save the prices in Local Storage
-        localStorage.setItem('cart',JSON.stringify(state))
+        localStorage.setItem('cart', JSON.stringify(state));
       }
     },
   },
 });
 
-export const { addToCart } = cartSlice.actions
+export const { addToCart } = cartSlice.actions;
 export default cartSlice.reducer;

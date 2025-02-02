@@ -1,18 +1,27 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { useParams } from 'react-router-dom'
+import { useSelector, useDispatch } from 'react-redux';
 import Rating from '../components/Rating';
 import { FaArrowLeft } from "react-icons/fa";
 import { Link } from 'react-router-dom';
 import { useGetProductDetailsQuery } from '../features/productsApiSlice.js'
 import Message from '../components/Message'
+import { addToCart } from '../features/cartSlice.js'
 
 
 const ProductDetails = () => {
 
     const { productId } = useParams();
     const { data: product, isLoading, error } = useGetProductDetailsQuery(productId); // productId comes from useParams
+    
+    const [quantity, setQuantity] = useState(1)
+    const dispatch = useDispatch()
 
 
+    const cart = useSelector((state) => console.log(state.cart.cartItems));
+    const addToCartHandler = () => {
+        dispatch(addToCart({ ...product, quantity }))
+    }
 
     return (
         <div className='flex flex-col gap-4 p-6'>
@@ -65,6 +74,20 @@ const ProductDetails = () => {
                                         <td className={`py-2 text-right   ${product.countInStock ? ' text-green-500' : 'text-red-500'} font-semibold`}> {product.countInStock ? 'In Stock' : 'Out Of Stock'} </td>
                                     </tr>
                                     <tr>
+                                        <td><label>Qty:</label></td>
+                                        <td className="py-2 text-right font-semibold text-gray-900">
+                                            <select value={quantity} onChange={(e) => setQuantity(Number(e.target.value))}>
+                                                {[...Array(product.countInStock).keys()].map(
+                                                    (x) => (
+                                                        <option key={x + 1} value={x + 1}>
+                                                            {x + 1}
+                                                        </option>
+                                                    )
+                                                )}
+                                            </select>
+                                        </td>
+                                    </tr>
+                                    <tr>
                                         <td className="py-2" colSpan={2}>
                                             <hr className="my-2" />
                                         </td>
@@ -75,6 +98,7 @@ const ProductDetails = () => {
                                                 className={`w-full py-2 mt-2 bg-indigo-600 text-white font-semibold rounded-lg shadow-md  focus:outline-none focus:ring-2 focus:ring-indigo-500 
 ${!product.countInStock ? 'bg-gray-400 cursor-not-allowed' : 'hover:bg-indigo-700'}`}
                                                 disabled={!product.countInStock}
+                                                onClick={addToCartHandler}
                                             >
                                                 Add to Cart
                                             </button>
