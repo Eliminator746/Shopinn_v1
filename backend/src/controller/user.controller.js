@@ -168,4 +168,101 @@ const logoutUser = asyncHandler(async (req, res) => {
     .json(new ApiResponse(200, 'User logged out successfully'));
 });
 
-export { registerUser, loginUser, logoutUser };
+const getUserProfile = asyncHandler(async (req,res)=>{
+  
+  if (!req.user) {
+    throw new ApiError(404, 'User not found'); 
+  }
+
+  const user= await User.findById(req.user._id).select('-password -refreshToken')
+  if(!user)
+    throw new ApiError(404, 'User not found')
+
+  res
+  .status(200)
+  .json(new ApiResponse(200, user , 'User fetched successfully'));
+})
+
+const updateUserProfile = asyncHandler(async(req,res)=>{
+  const { name, email, password } = req.body;
+
+  const user = await User.findById(req.user._id);
+  if (!user) {
+    throw new ApiError(404, 'User not found');
+  }
+  
+  user.name = name || user.name;
+  user.email = email || user.email;
+  if (password) {
+    user.password = password;
+  }
+
+  const updatedUser = await user.save();
+
+  res
+  .status(200)
+  .json(new ApiResponse(200, updatedUser, 'User updated successfully'));
+})
+
+const getUsers = asyncHandler(async(req,res)=>{
+  const users = await User.find({});
+  res.json(users);
+})
+
+// ------------------------------------------------------------------------------------------------------------------------
+//                                                       Delete User LOGIC
+// ------------------------------------------------------------------------------------------------------------------------
+  // You can only delete users not admin
+// ------------------------------------------------------------------------------------------------------------------------
+const deleteUser = asyncHandler(async(req,res)=>{
+  const user = await User.findById(req.params.id);
+
+  if(!user)
+    throw new ApiError(404, 'User not found')
+
+  if(!user.isAdmin)
+    throw new ApiError(400, 'Can not delete admin user')
+
+
+  const userToDelete= await User.deleteOne({_id:user._id})
+  res.json({ message: 'User removed' });
+})
+
+const getUserById = asyncHandler(async(req,res)=>{
+  const user = await User.findById(req.params.id).select('-password -refreshToken');
+
+  if(!user)
+    throw new ApiError(404, 'User not found')
+
+  res.json(user);
+})
+
+const updateUser = asyncHandler(async(req,res)=>{
+  const user = await User.findById(req.params.id).select('-password -refreshToken');
+
+  if(!user)
+    throw new ApiError(404, 'User not found')
+
+  const { name, email, isAdmin } = req.body;
+  user.name = name || user.name;
+  user.email = email || user.email;
+  user.isAdmin = Boolean(isAdmin);
+
+  const updatedUser = await user.save();
+
+  res
+  .status(200)
+  .json(new ApiResponse(200, user, "User Updated successfully"))
+})
+
+export {
+  registerUser,
+  loginUser,
+  logoutUser,
+  getUsers,
+  getUserProfile,
+  updateUserProfile,
+  getUserById,
+  deleteUser,
+  updateUser,
+};

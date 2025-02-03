@@ -42,3 +42,15 @@ export const verifyJWT= asyncHandler(async (req,_,next) => {
     }
  
  });
+
+export const admin = asyncHandler(async (req, res, next) => {
+  // Check if req.user exists
+   if (!req.user) {
+    throw new ApiError(401, 'Not authenticated');
+  }
+  // Check if user is Admin
+  if (!req.user.isAdmin) 
+    throw new ApiError(401, 'Not authorized as an admin');
+
+  next();
+});
