@@ -3,7 +3,7 @@ import jwt from 'jsonwebtoken';
 import bcypt from 'bcrypt';
 
 
-const userSchema = new mongoose.Schema({
+const UserSchema = new mongoose.Schema({
   name: {
     type: String,
     required: true,
@@ -52,11 +52,11 @@ UserSchema.methods.isPasswordCorrect = async function (password) {
 //                                                          JWT TOKEN GENERATION
 // ------------------------------------------------------------------------------------------------------------------------
 
-UserSchema.methods.generateAccessToken = () => {
+UserSchema.methods.generateAccessToken = function () {
   return jwt.sign(
     {
       _id: this._id,
-      email: this.email,
+      email: this.email
     },
     process.env.ACCESS_TOKEN_SECRET,
 
@@ -65,7 +65,7 @@ UserSchema.methods.generateAccessToken = () => {
     }
   );
 };
-UserSchema.methods.generateRefreshToken = () => {
+UserSchema.methods.generateRefreshToken = function () {
   return jwt.sign(
     {
       _id: this._id
@@ -77,5 +77,4 @@ UserSchema.methods.generateRefreshToken = () => {
     }
   );
 };
-
-export const User = mongoose.model('User', userSchema);
+export const User = mongoose.model('User', UserSchema);

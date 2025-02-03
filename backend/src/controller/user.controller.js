@@ -1,6 +1,8 @@
-import { User } from '../models/product.models.js';
+import { User } from '../models/user.models.js';
 import { ApiError } from '../utils/ApiError.js';
 import { asyncHandler } from '../utils/asyncHandler.js';
+import { ApiResponse } from '../utils/ApiResponse.js'
+import { UserValidationSchema } from '../schema/userValidationSchema.js';
 
 // ------------------------------------------------------------------------------------------------------------------------
 //                                                       Register User LOGIC
@@ -19,18 +21,10 @@ import { asyncHandler } from '../utils/asyncHandler.js';
 
 const registerUser = asyncHandler(async (req, res) => {
   // 1. Get all fields from user from req.
-  const { username, email, fullName, password } = req.body;
+  const { name, email, password } = req.body;
 
   // 2. Validation
-  if (
-    [username, email, fullName, password].some((field) => field?.trim() === '')
-  ) {
-    return res
-      .status(400)
-      .json({ success: false, message: 'Please fill all fields' });
-  }
-
-  // zod
+  UserValidationSchema.parse(req.body); // Throws an error if invalid
 
   // 3. Check if user already exists
   const existedUser = await User.findOne({ email });
@@ -43,9 +37,9 @@ const registerUser = asyncHandler(async (req, res) => {
 
   // 5. create user obj. i.e store in db
   const user = await User.create({
-    username,
+    name,
     email,
-    fullName,
+  
     password,
   });
 
@@ -71,7 +65,7 @@ const registerUser = asyncHandler(async (req, res) => {
 //                                                       Login User LOGIC
 // ------------------------------------------------------------------------------------------------------------------------
 
-// 1. Get the username or email, password from req.
+// 1. Get the name or email, password from req.
 // 2. Check if that email exists in our db.
 // 3. If yes, then compare its password with the password stored in db
 // 4. Generate access and refresh token and update user in db with refresh token
@@ -80,16 +74,14 @@ const registerUser = asyncHandler(async (req, res) => {
 // ------------------------------------------------------------------------------------------------------------------------
 const loginUser = asyncHandler(async (req, res) => {
   // Step 1 : Extract details from request body
-  const { email, username, password } = req.body;
-  if (!email || !username || !password) {
-    throw new ApiError(400, 'Please fill the required details');
-  }
+  const { email, name, password } = req.body;
+  UserValidationSchema.parse(req.body);
 
   // Step 2: Find user
   const user = await User.findOne({ email });
 
   if (!user) {
-    return ApiError(400, 'User not found');
+    throw new ApiError(400, 'User not found');
   }
 
   // Validate password
@@ -154,7 +146,8 @@ async function generateAccessAndRefereshTokens(userId) {
 const logoutUser = asyncHandler(async (req, res) => {
 
   // Step 1: Get userId from req.user
-  console.log('req.user', req.user);
+ 
+  // console.log('req.user', req.user);
   await User.findByIdAndUpdate(
     req.user._id,
     { refreshToken: null },
