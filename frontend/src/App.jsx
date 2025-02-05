@@ -3,6 +3,7 @@ import Layout from "./components/Layout";
 import HomeScreen from "./screens/HomeScreen";
 import ProductDetails from "./screens/ProductDetails";
 import CartScreen from "./screens/CartScreen";
+import LoginScreen from "./screens/LoginScreen";
 
 export default function App() {
   return <>
@@ -12,6 +13,7 @@ export default function App() {
           <Route path="/" element={<HomeScreen />} />
           <Route path="product/:productId" element={<ProductDetails />} />
           <Route path="/cart" element={<CartScreen />} />
+          <Route path="/login" element={<LoginScreen />} />
         </Route>
       </Routes>
     </BrowserRouter>
