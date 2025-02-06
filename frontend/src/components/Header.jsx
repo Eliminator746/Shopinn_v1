@@ -1,6 +1,7 @@
 import { FaShoppingCart, FaUser } from 'react-icons/fa';
 import { NavLink } from 'react-router-dom';
 import { useSelector } from 'react-redux'
+import { DropdownMenu } from "../components/DropdownMenu";
 
 const Header = () => {
 
@@ -9,6 +10,8 @@ const Header = () => {
   })
   const totalqty = cart.reduce((acc, items) => acc + items.quantity, 0)
   // console.log(totalqty);
+
+  const { userInfo } = useSelector((state)=> state.auth)
 
   return (
     <div className='sticky top-0 z-10 flex justify-between items-center py-4 px-6 bg-white bg-opacity-80 backdrop-blur-md text-gray-800 shadow-lg'>
@@ -27,10 +30,15 @@ const Header = () => {
           </NavLink>
         </li>
         <li className='navbar-item'>
-          <NavLink to='/login'>
+          {userInfo ? (
+            <DropdownMenu />
+          ) : (
+            <NavLink to='/login'>
             <FaUser className='text-xl' />
             <span className='text-lg'>Sign In</span>
           </NavLink>
+          ) }
+          
         </li>
       </ul>
     </div>

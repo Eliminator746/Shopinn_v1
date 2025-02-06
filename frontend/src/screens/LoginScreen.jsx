@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import { setCredentials } from "../features/authSlice.js"
 import { useLoginMutation } from "../features/userApiSlice.js";
@@ -14,26 +14,27 @@ const LoginScreen = () => {
     const dispatch = useDispatch();
     const navigate = useNavigate();
 
-    const { login, isLoading } = useLoginMutation();
+    const [login, { isLoading }] = useLoginMutation();
 
     const { userInfo } = useSelector((state) => state.auth);
     console.log('Rendered userInfo:', userInfo);
 
 
-    const redirect = '/';
+    const { search } = useLocation();
+    const sp = new URLSearchParams(search);
+    const redirect = sp.get('redirect') || '/';
     useEffect(() => {
-        console.log('Auth check - userInfo:', userInfo);
         if (userInfo) {
-            navigate('/');
+            navigate(redirect);
         }
-    }, [userInfo, navigate]);
+    }, [navigate, redirect, userInfo]);
 
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
             const res = await login({ email, password }).unwrap();
             console.log('Login response:', res);
-            dispatch(setCredentials(res));
+            dispatch(setCredentials({...res}));
             navigate(redirect);
         } catch (err) {
             console.error('Login error:', err);
@@ -81,7 +82,9 @@ const LoginScreen = () => {
                 <div className="flex items-center gap-4">
                     <span className="text-sm text-gray-600">New Customer?</span>
                     <span className="text-sm font-medium">
-                        <Link to={'/register'}>Register</Link>
+                        <Link to={redirect ? `/register?redirect=${redirect}` : '/register'}>
+                            Register
+                        </Link>
                     </span>
                 </div>
             </div>

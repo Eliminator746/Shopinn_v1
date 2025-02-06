@@ -74,7 +74,7 @@ const registerUser = asyncHandler(async (req, res) => {
 // ------------------------------------------------------------------------------------------------------------------------
 const loginUser = asyncHandler(async (req, res) => {
   // Step 1 : Extract details from request body
-  const { email, name, password } = req.body;
+  const { email, password } = req.body;
   UserValidationSchema.parse(req.body);
 
   // Step 2: Find user
