@@ -4,6 +4,8 @@ import HomeScreen from "./screens/HomeScreen";
 import ProductDetails from "./screens/ProductDetails";
 import CartScreen from "./screens/CartScreen";
 import LoginScreen from "./screens/LoginScreen";
+import ShippingScreen from "./screens/ShippingScreen";
+import PrivateRoutes from "./components/PrivateRotues";
 
 export default function App() {
   return <>
@@ -14,6 +16,10 @@ export default function App() {
           <Route path="product/:productId" element={<ProductDetails />} />
           <Route path="/cart" element={<CartScreen />} />
           <Route path="/login" element={<LoginScreen />} />
+          <Route path="" element={<PrivateRoutes />}>
+            <Route path="/shipping" element={<ShippingScreen />} />
+          </Route>
+
         </Route>
       </Routes>
     </BrowserRouter>
