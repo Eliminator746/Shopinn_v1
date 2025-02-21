@@ -3,7 +3,15 @@ import { saveShippingAddress } from '../features/cartSlice.js'
 import { useSelector, useDispatch } from 'react-redux'
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
+import CheckoutSteps from '../components/CheckoutSteps.jsx';
 
+//---------------------------------------------------------------------------------------------------------------------
+//                                              ShippingScreen Logic
+//---------------------------------------------------------------------------------------------------------------------
+
+    //1. Dispatch an object { address, city, postalCode, country }, then navigate to '/payment'
+
+//---------------------------------------------------------------------------------------------------------------------
 
 const ShippingScreen = () => {
 
@@ -14,7 +22,7 @@ const ShippingScreen = () => {
     const { shippingAddress } = cart;
     // console.log({cart});
     // console.log(typeof(cart));
-    
+     
 
 
     const [address, setAddress] = useState('')
@@ -39,6 +47,7 @@ const ShippingScreen = () => {
             <div className="w-full max-w-3xl p-8">
                 <h1 className="text-3xl font-semibold text-center text-gray-800 my-6">Shipping Information</h1>
 
+                <CheckoutSteps step1 step2 /> {/*shorthand*/}
                 <form onSubmit={handleSubmit}>
                     <div className="mb-4">
                         <label className="block text-gray-700 font-medium mb-2">Address</label>
