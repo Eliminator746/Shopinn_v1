@@ -41,7 +41,7 @@ const PaymentScreen = () => {
 
         try {
             dispatch(savePaymentMethod(paymentMethod))
-            navigate('/placeOrder')
+            navigate('/placeorder')
         } catch (err) {
             console.error('err : ', err);
         }

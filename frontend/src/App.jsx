@@ -6,6 +6,7 @@ import CartScreen from "./screens/CartScreen";
 import LoginScreen from "./screens/LoginScreen";
 import ShippingScreen from "./screens/ShippingScreen";
 import PaymentScreen from "./screens/PaymentScreen";
+import PlaceOrderScreen from "./screens/PlaceOrderScreen";
 import PrivateRoutes from "./components/PrivateRotues";
 
 export default function App() {
@@ -20,6 +21,7 @@ export default function App() {
           <Route path="" element={<PrivateRoutes />}>
             <Route path="/shipping" element={<ShippingScreen />} />
             <Route path="/payment" element={<PaymentScreen />} />
+            <Route path="/placeorder" element={< PlaceOrderScreen />} />
           </Route>
 
         </Route>

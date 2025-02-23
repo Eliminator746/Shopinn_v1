@@ -33,9 +33,11 @@ app.use(cookieParser());
 //routes import
 import productRouter from './src/routes/product.router.js';
 import userRouter from './src/routes/user.router.js'
+import orderRouter from './src/routes/order.router.js'
 
 app.use("/api/v1", productRouter)
 app.use("/api/v1/users", userRouter)
+app.use("/api/v1/orders", orderRouter)
 
 
 // http://localhost:8000/api/v1/{productRouter}
