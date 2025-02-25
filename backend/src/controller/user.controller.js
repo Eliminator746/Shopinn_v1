@@ -39,7 +39,6 @@ const registerUser = asyncHandler(async (req, res) => {
   const user = await User.create({
     name,
     email,
-  
     password,
   });
 
@@ -91,14 +90,14 @@ const loginUser = asyncHandler(async (req, res) => {
   }
 
   // Step 4: Generate access and refresh token and update user with refresh token
-  const { accessToken, refreshToken } = await generateAccessAndRefereshTokens(
+  const { accessToken, refreshToken } = await generateAccessAndRefreshTokens(
     user._id
   );
 
   // Step 5: Send cookies to frontend
   const options = {
     httpOnly: true,
-    secure: true,
+    secure: process.env.NODE_ENV !== 'development',
   };
   // Don't send password and refresh token to user in response
   const loggedInUser = await User.findById(user._id).select(
@@ -118,7 +117,7 @@ const loginUser = asyncHandler(async (req, res) => {
     );
 });
 
-async function generateAccessAndRefereshTokens(userId) {
+async function generateAccessAndRefreshTokens(userId) {
   try {
     const user = await User.findById(userId);
 
@@ -157,9 +156,8 @@ const logoutUser = asyncHandler(async (req, res) => {
   // Step 3: Clear cookies
   const options = {
     httpOnly: true,
-    secure: true,
+    secure: process.env.NODE_ENV !== 'development',
   };
-
   // Send response
   res
     .status(200)

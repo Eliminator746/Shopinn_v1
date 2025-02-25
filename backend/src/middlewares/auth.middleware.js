@@ -13,11 +13,13 @@ import jwt from 'jsonwebtoken';
 // 4. Send user data via req.user
 
 // ------------------------------------------------------------------------------------------------------------------------
-export const verifyJWT= asyncHandler(async (req,_,next) => {
+export const verifyJWT= asyncHandler(async (req,res,next) => {
     
     try {
       // Step 1: Get token from cookies or headers
-      const token = req.cookie?.accessToken || req.headers.authorization?.split(' ')[1];
+      console.log(req.cookies);
+      
+      const token = req.cookies?.accessToken || req.headers.authorization?.split(' ')[1];
       console.log('token', token);
       if(!token){
         throw new ApiError(401, 'Unauthorized');

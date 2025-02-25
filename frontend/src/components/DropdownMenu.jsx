@@ -1,5 +1,8 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
+import { logout } from "../features/authSlice";
+import { useNavigate } from 'react-router-dom';
+import { useLogoutMutation } from '../features/userApiSlice';
 
 const DropdownMenu = () => {
     const [isOpen, setIsOpen] = useState(false);
@@ -7,7 +10,12 @@ const DropdownMenu = () => {
 
     const { userInfo } = useSelector((state) => state.auth)
     const name = userInfo.data.user.name;
-    console.log(userInfo.data.user.name);
+
+    const dispatch = useDispatch();
+    const navigate = useNavigate();
+    const [logoutApiCall] = useLogoutMutation();
+    console.log('logoutApiCall : ', logoutApiCall);
+
 
     // Handle clicks outside the dropdown and Escape key
     useEffect(() => {
@@ -17,18 +25,29 @@ const DropdownMenu = () => {
             }
         };
 
-        const handleEscape = (event) => {
-            if (event.key === 'Escape') setIsOpen(false);
-        };
-
         document.addEventListener('click', handleClickOutside);
-        document.addEventListener('keydown', handleEscape);
-
         return () => {
             document.removeEventListener('click', handleClickOutside);
-            document.removeEventListener('keydown', handleEscape);
         };
-    }, []);
+    }, [isOpen]);
+
+    const logoutHandler = async () => {
+        try {
+            setIsOpen(false)
+
+            // Ensure userInfo exists before making API call
+            if (!userInfo) {
+                console.log("User not found, skipping logout API call.");
+                return;
+            }
+            await logoutApiCall().unwrap()
+
+            dispatch(logout())
+            navigate('/login')
+        } catch (error) {
+            console.log('error : ', error);
+        }
+    }
 
     return (
         <div className="relative inline-block" ref={dropdownRef}>
@@ -48,7 +67,7 @@ const DropdownMenu = () => {
                         Profile
                     </li>
                     <li
-                        onClick={() => setIsOpen(false)}
+                        onClick={logoutHandler}
                         className="px-4 py-2 cursor-pointer hover:bg-gray-100"
                     >
                         Logout

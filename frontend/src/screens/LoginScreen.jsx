@@ -5,6 +5,17 @@ import { setCredentials } from "../features/authSlice.js"
 import { useLoginMutation } from "../features/userApiSlice.js";
 import { toast } from 'react-toastify';
 
+// ------------------------------------------------------------------------------------------------------------------------
+//                                                          LoginScreen Logic
+// ------------------------------------------------------------------------------------------------------------------------
+
+// If user is already logged in, redirect them using navigate. This prevents logged-in users from seeing the login screen again.
+// As you click Login, email and password is sent to BE via POST req.
+// You get the BE response, and store it in a variable
+// Then you dispatch the reponse to setCredentials to store it in local storage.
+// Then navigates to the redirect
+
+// ------------------------------------------------------------------------------------------------------------------------
 
 const LoginScreen = () => {
 

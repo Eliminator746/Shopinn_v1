@@ -1,7 +1,6 @@
 import { apiSlice } from './apiSlice.js';
 import { ORDERS_URL } from '../constants.js';
-import { response } from 'express';
-
+// import { response } from 'express'; This lead to white screen. Fixed
 export const ordersApiSlice = apiSlice.injectEndpoints({
   endpoints: (builder) => ({
     createOrder: builder.mutation({
@@ -10,7 +9,6 @@ export const ordersApiSlice = apiSlice.injectEndpoints({
         method: 'POST',
         body: { ...data },
       }),
-      // transformResponse: (response) => response.createdOrder, // Extracting createdOrder from the response
     }),
     getMyOrders: builder.query({
       query: () => ({

@@ -4,6 +4,7 @@ import { BASE_URL } from '../constants.js';
 
 const baseQuery = fetchBaseQuery({
   baseUrl: BASE_URL,
+  credentials: 'include',
 });
 
 // Define a service using a base URL and expected endpoints

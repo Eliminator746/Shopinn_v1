@@ -11,6 +11,8 @@ app.use(cors({
     origin : process.env.CORS_ORIGIN,   
     credentials : true
 }));
+// CORS_ORIGIN=* : This was creating issue, bec of this I was getting token undefined
+// CORS_ORIGIN=http://localhost:5173, this fixes the issue. With credentials true, specify specific ORIGIN url
 
 // Handles the incoming request with JSON payload
 app.use(express.json({limit : "16kb"}));
