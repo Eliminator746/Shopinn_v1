@@ -17,12 +17,14 @@ export const ordersApiSlice = apiSlice.injectEndpoints({
       transformResponse: (response) => response.products,
       keepUnusedDataFor: 2,
     }),
+
+    // /api/v1/orders/:orderId
     getOrderDetails: builder.query({
-      query: (productId) => ({
-        url: `${ORDERS_URL}/${id}`,
+      query: (orderId) => ({
+        url: `${ORDERS_URL}/${orderId}`,
       }),
-      keepUnusedDataFor: 2,
-      transformResponse: (response) => response.singleProduct,
+      transformResponse: (response) => response.data,
+      keepUnusedDataFor: 5,
     }),
     getOrder: builder.query({
       query: () => ({

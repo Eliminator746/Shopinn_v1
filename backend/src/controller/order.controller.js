@@ -62,21 +62,20 @@ const getMyOrders = asyncHandler(async (req, res) => {
 });
 
 // @route   GET /api/orders/:id
-const getOrderById = asyncHandler(async (req, res) => {
-
-  const orderId= req.params.id;
+const getOrderById = asyncHandler(async (req, res) => { 
   const order = await Order.findById(req.params.id).populate(
-    'user','username email'
+    'user', 'name email'
   )
 
-  if(!order)
-    throw new ApiError(404, "Order not found")
-
+  if (!order) {
+    throw new ApiError(404, "Order not found");
+  }
   return res
   .status(200)
-  .json(new ApiResponse(200, order, "Order fetched successfully"))
-
+  .json(new ApiResponse(200, order, "Order fetched successfully"));
+  
 });
+
 
 const updateOrderToPaid = asyncHandler(async (req, res) => {
   console.log('Updating order status to paid');

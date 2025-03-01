@@ -42,22 +42,22 @@ const PlaceOrderScreen = () => {
 
     const onClickHandler = async () => {
         try {
-
-            const data = {
+            // Check network tab in response -> You'll get how to get specific value 
+            // do POST req.
+            const res = await createOrder({
                 orderItems: cart.cartItems,
-                shippingAddress: cart.shippingAddress.address,
+                shippingAddress: cart.shippingAddress,
                 paymentMethod: cart.paymentMethod,
                 itemsPrice: cart.itemsPrice,
                 taxPrice: cart.taxPrice,
                 shippingPrice: cart.shippingPrice,
                 totalPrice: cart.totalPrice,
-            };
+            }).unwrap();
 
-            // do post req.
-            const response = await createOrder(data).unwrap();
-            console.log(response);
+            // console.log('res_id : ', res.data._id); Check network tab in response -> You'll get how to get specific value 
+            navigate(`/order/${res.data._id}`)
             // dispatch(clearCartItems())
-            // navigate(`/order/${response._id}`)
+            toast.success('Order created successfully!');
 
         } catch (err) {
             console.error('Order Creation error:', err);
@@ -71,9 +71,9 @@ const PlaceOrderScreen = () => {
             {isLoading ? (
                 <h2>🌀 Loading...</h2>
             ) : error ? (
-               <>
-                <Message variant='danger'>{error?.data?.message || error.error}</Message>
-                {console.log(error)}
+                <>
+                    <Message variant='danger'>{error?.data?.message || error.error}</Message>
+                    {console.log(error)}
                 </>
             ) : (
                 <>
