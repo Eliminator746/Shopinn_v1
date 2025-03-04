@@ -4,9 +4,14 @@ import './index.css'
 import App from './App.jsx'
 import { Provider } from 'react-redux'
 import { store } from './app/store.js'
+import { PayPalScriptProvider } from "@paypal/react-paypal-js";
 
 createRoot(document.getElementById('root')).render(
   <Provider store={store}>
-    <App />
+    <PayPalScriptProvider deferLoading={true}>
+      <App />
+    </PayPalScriptProvider>
   </Provider>,
 )
+
+
