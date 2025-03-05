@@ -1,19 +1,111 @@
 import React from 'react'
+import { useEffect } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import Message from '../components/Message';
-import { useGetOrderDetailsQuery } from '../features/ordersApiSlice';
+import { toast } from 'react-toastify';
+import { useGetOrderDetailsQuery, usePayOrderMutation, useGetPaypalClientIdQuery } from '../features/ordersApiSlice';
+import { PayPalButtons, usePayPalScriptReducer } from '@paypal/react-paypal-js';
+import { useSelector } from 'react-redux';
+
 
 const OrderScreen = () => {
-  const { id } = useParams();
-  const { data, isLoading, error } = useGetOrderDetailsQuery(id);
+  const { id: orderId} = useParams();
+  const { data : order, refetch, isLoading, error } = useGetOrderDetailsQuery(orderId);
 
-  if (!data) return null; // Edge case if no data present
-  // console.log(data);
-
-  const { user, isDelivered, isPaid, paymentMethod, orderItems, shippingAddress, shippingPrice, taxPrice, totalPrice, itemsPrice } = data || {};
+  const { user, isDelivered, isPaid, paymentMethod, orderItems, shippingAddress, shippingPrice, taxPrice, totalPrice, itemsPrice } = order || {};
   const { name, email } = user || {};
 
-  const totalQuantity = orderItems.reduce((acc, currVal) => acc + currVal.quantity, 0)
+  const totalQuantity = orderItems ? orderItems.reduce((acc, currVal) => acc + currVal.quantity, 0) : 0
+
+
+  // ------------------------------------------------------------------------------------------------------------------------
+    //                                                       PayPal LOGIC
+  // ------------------------------------------------------------------------------------------------------------------------
+
+  const [ payOrder, {isLoading: loadingPay} ] = usePayOrderMutation();
+
+  // Reducer fn
+  const [ {isPending}, paypalDispatch ]= usePayPalScriptReducer();
+
+  const { userInfo } = useSelector((state)=> state.auth);
+  
+
+  //Fetching PayPal ClientId
+  const { data: paypal, isLoading: loadingPayPal, error: errorPayPal } = useGetPaypalClientIdQuery();
+  // console.log("PayPal API Response:", paypal);
+
+  useEffect(() => {
+    if (!errorPayPal && !loadingPayPal && paypal?.clientId) {
+      const loadinPayPalScript = async () => {
+        console.log("hi");
+        
+        paypalDispatch({
+          type: 'resetOptions',
+          value: {
+            "client-id": paypal.clientId,
+            currency: "USD",
+          },
+        });
+        paypalDispatch({
+          type: 'setLoadingStatus',
+          value: 'pending',
+        });
+      };
+      console.log('clientId  : ', paypal.clientId);
+      
+      
+      if (order && !isPaid) {
+        if (!window.paypal) {
+          loadinPayPalScript();
+        }
+      }
+    }
+  }, [errorPayPal, loadingPayPal, paypal, order, paypalDispatch]);
+  
+  const createOrder = (data, actions) => {
+    return actions.order.create({
+      purchase_units :[
+        {
+          amount: {
+            value: totalPrice
+          }
+        }
+      ]
+    }).then((orderId)=>{
+      return orderId
+    });
+
+  }
+
+  const onApprove= (data, actions) => {
+    
+    return actions.order.capture().
+      then(async function (details) {
+        try {
+          // send PUT req. to Backend
+          await payOrder ({ orderId, details })
+
+          //refresh order (i.e data) details
+          refetch();
+          toast.success("Payment Successful")
+        } catch (err) {
+          toast.error(err?.data?.message || err.message)
+        }
+      })
+  }
+
+  const onApproveTest = async () => {
+    await payOrder({orderId, details : { payer: {} }})
+    console.log('isPaid : ', isPaid);
+    refetch()
+    
+    toast.success("Order is successfully paid")
+  }
+
+  const onError = (err) => {
+    toast.error(err.message)
+  }
+  console.log('isPaid : ', isPaid);
 
   return (
     <>
@@ -24,10 +116,10 @@ const OrderScreen = () => {
         ) : (
           <>
             <div className='bg-gray-50 pt-6'>
-              <h1 className='mb-8 text-3xl font-semibold text-gray-800 px-4'>Order {id}</h1>
-              <div className='grid grid-cols-1 md:grid-cols-2 '>
+              <h1 className='mb-8 text-3xl font-semibold text-gray-800 px-4'>Order {orderId}</h1>
+              <div className='grid grid-cols-1 md:grid-cols-3 '>
                 {/* Left Section */}
-                <div className="container mx-auto px-4 ">
+                <div className="container mx-auto px-4 col-span-2">
                   <div className="mb-8">
                     <h1 className="text-3xl font-semibold text-gray-800">Shipping</h1>
                     <div className="mt-4">
@@ -122,18 +214,42 @@ const OrderScreen = () => {
                       <Message variant="danger">{error.data.message}</Message>
                     )}
                   </div>
-                  {/* Button to place order */}
+                  {/* Button to place order i.e order */}
                   <div className="mt-6">
-                    {user && isPaid && !isDelivered && (
+                    {!isPaid && (
+                      <div>
+                        {loadingPay && <div>loading Pay...</div>}{" "}
+                        {isPending ? (
+                          <div>Loading PayPal ... </div>
+                        ) : (
+                          <div>
+                            <button onClick={onApproveTest}>
+                              Test Button
+                            </button>
+
+                            <div>
+                              <PayPalButtons
+                                createOrder={createOrder}
+                                onApprove={onApprove}
+                                onError={onError}
+                              ></PayPalButtons>
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    )}
+                  </div>
+                  
+                  {/* <div className="mt-6">
+                    {userInfo  && isPaid && !isDelivered && (
                       <Button
                         type="button"
                         className="w-full py-3 px-5 bg-gray-500 text-gray-100 text-lg font-semibold rounded-lg hover:bg-green-600 transition duration-200"
-                        onClick={deliverHandler}
                       >
                         Mark As Delivered
                       </Button>
                     )}
-                  </div>
+                  </div> */}
                   {/* Loading state */}
                   {isLoading && <div className="text-center text-gray-600 mt-4">Loading...</div>}
                 </div>
