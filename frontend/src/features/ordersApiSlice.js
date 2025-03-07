@@ -12,9 +12,9 @@ export const ordersApiSlice = apiSlice.injectEndpoints({
     }),
     getMyOrders: builder.query({
       query: () => ({
-        url: ORDERS_URL,
+        url: `${ORDERS_URL}/myorders`,
       }),
-      transformResponse: (response) => response.products,
+      transformResponse: (response) => response.data,
       keepUnusedDataFor: 2,
     }),
 

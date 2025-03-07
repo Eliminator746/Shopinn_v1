@@ -199,7 +199,7 @@ const updateUserProfile = asyncHandler(async(req,res)=>{
 
   res
   .status(200)
-  .json(new ApiResponse(200, updatedUser, 'User updated successfully'));
+  .json(new ApiResponse(200, {user:updatedUser}, 'User updated successfully'));
 })
 
 const getUsers = asyncHandler(async(req,res)=>{
