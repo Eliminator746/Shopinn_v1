@@ -28,7 +28,7 @@ const LoginScreen = () => {
     const [login, { isLoading }] = useLoginMutation();
 
     const { userInfo } = useSelector((state) => state.auth);
-    console.log('Rendered userInfo:', userInfo);
+    // console.log('Rendered userInfo:', userInfo);
 
 
     const { search } = useLocation();
@@ -46,7 +46,7 @@ const LoginScreen = () => {
             const res = await login({ email, password }).unwrap();
             console.log('Login response:', res);
             dispatch(setCredentials({...res}));
-            navigate(redirect);
+            navigate(redirect); 
         } catch (err) {
             console.error('Login error:', err);
             toast.error(err?.data?.message || err.error || 'Login failed');

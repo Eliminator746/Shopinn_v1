@@ -10,6 +10,8 @@ import PlaceOrderScreen from "./screens/PlaceOrderScreen";
 import PrivateRoutes from "./components/PrivateRotues";
 import OrderScreen from "./screens/OrderScreen";
 import ProfileScreen from "./screens/ProfileScreen";
+import AdminRoute from "./components/AdminRoute";
+import OrderList from "./screens/OrderList";
 
 export default function App() {
   return <>
@@ -26,6 +28,10 @@ export default function App() {
             <Route path="/placeorder" element={< PlaceOrderScreen />} />
             <Route path="/order/:id" element={< OrderScreen />} />
             <Route path="/profile" element={< ProfileScreen />} />
+          </Route>
+
+          <Route path="/admin" element={<AdminRoute />}>
+            <Route path="/admin/orderlist" element={<OrderList />} />
           </Route>
 
         </Route>

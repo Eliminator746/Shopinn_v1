@@ -10,11 +10,12 @@ const DropdownMenu = () => {
 
     const { userInfo } = useSelector((state) => state.auth)
     const name = userInfo.data.user.name;
+    const isAdmin = userInfo.data.user.isAdmin
 
     const dispatch = useDispatch();
     const navigate = useNavigate();
     const [logoutApiCall] = useLogoutMutation();
-    console.log('logoutApiCall : ', logoutApiCall);
+    // console.log('logoutApiCall : ', logoutApiCall);
 
 
     // Handle clicks outside the dropdown and Escape key
@@ -66,6 +67,16 @@ const DropdownMenu = () => {
                     >
                         Profile
                     </li>
+                    {
+                        isAdmin && (
+                            <li
+                                onClick={() => setIsOpen(false)}
+                                className="px-4 py-2 cursor-pointer hover:bg-gray-100"
+                            >
+                                OrderList
+                            </li>
+                        )
+                    }
                     <li
                         onClick={logoutHandler}
                         className="px-4 py-2 cursor-pointer hover:bg-gray-100"

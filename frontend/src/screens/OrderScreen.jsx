@@ -28,7 +28,6 @@ const OrderScreen = () => {
   const [ {isPending}, paypalDispatch ]= usePayPalScriptReducer();
 
   const { userInfo } = useSelector((state)=> state.auth);
-  
 
   //Fetching PayPal ClientId
   const { data: paypal, isLoading: loadingPayPal, error: errorPayPal } = useGetPaypalClientIdQuery();
@@ -36,9 +35,7 @@ const OrderScreen = () => {
 
   useEffect(() => {
     if (!errorPayPal && !loadingPayPal && paypal?.clientId) {
-      const loadinPayPalScript = async () => {
-        console.log("hi");
-        
+      const loadingPayPalScript = async () => {
         paypalDispatch({
           type: 'resetOptions',
           value: {
@@ -56,7 +53,7 @@ const OrderScreen = () => {
       
       if (order && !isPaid) {
         if (!window.paypal) {
-          loadinPayPalScript();
+          loadingPayPalScript();
         }
       }
     }
@@ -67,7 +64,7 @@ const OrderScreen = () => {
       purchase_units :[
         {
           amount: {
-            value: totalPrice
+            value: totalPrice.toString()
           }
         }
       ]
@@ -86,7 +83,7 @@ const OrderScreen = () => {
           await payOrder ({ orderId, details })
 
           //refresh order (i.e data) details
-          refetch();
+          await refetch();
           toast.success("Payment Successful")
         } catch (err) {
           toast.error(err?.data?.message || err.message)
@@ -95,9 +92,11 @@ const OrderScreen = () => {
   }
 
   const onApproveTest = async () => {
-    await payOrder({orderId, details : { payer: {} }})
-    console.log('isPaid : ', isPaid);
+    const res= await payOrder({orderId, details : { payer: {} }})
     refetch()
+    console.log('isPaid : ', isPaid);
+    console.log('res : ', res);
+    
     
     toast.success("Order is successfully paid")
   }
@@ -105,7 +104,6 @@ const OrderScreen = () => {
   const onError = (err) => {
     toast.error(err.message)
   }
-  console.log('isPaid : ', isPaid);
 
   return (
     <>
@@ -150,7 +148,7 @@ const OrderScreen = () => {
                     </div>
                   </div>
                   <div className="mb-8">
-                    {isPaid ? <Message variant='success'>Paid</Message> : <Message variant='danger'>Not Paid</Message>}
+                    {isPaid ? <Message variant='success'>Paid on {order.paidAt}</Message> : <Message variant='danger'>Not Paid</Message>}
                   </div>
                   <div className="mb-8">
                     <h1 className="text-3xl font-semibold text-gray-800">Order Items</h1>
@@ -216,7 +214,7 @@ const OrderScreen = () => {
                   </div>
                   {/* Button to place order i.e order */}
                   <div className="mt-6">
-                    {!isPaid && (
+                    {!order.isPaid && (
                       <div>
                         {loadingPay && <div>loading Pay...</div>}{" "}
                         {isPending ? (

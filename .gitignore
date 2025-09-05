@@ -23,6 +23,7 @@ lib-cov
 coverage
 *.lcov
 
+FRONTEND.md
 # nyc test coverage
 .nyc_output
 
