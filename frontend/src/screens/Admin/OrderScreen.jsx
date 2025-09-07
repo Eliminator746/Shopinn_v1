@@ -1,16 +1,16 @@
 import React from 'react'
 import { useEffect } from 'react';
 import { Link, useParams } from 'react-router-dom';
-import Message from '../components/Message';
+import Message from '../../components/Message';
 import { toast } from 'react-toastify';
-import { useGetOrderDetailsQuery, usePayOrderMutation, useGetPaypalClientIdQuery } from '../features/ordersApiSlice';
+import { useGetOrderDetailsQuery, usePayOrderMutation, useGetPaypalClientIdQuery, useDeliverOrderMutation } from '../../features/ordersApiSlice';
 import { PayPalButtons, usePayPalScriptReducer } from '@paypal/react-paypal-js';
 import { useSelector } from 'react-redux';
 
 
 const OrderScreen = () => {
-  const { id: orderId} = useParams();
-  const { data : order, refetch, isLoading, error } = useGetOrderDetailsQuery(orderId);
+  const { id: orderId } = useParams();
+  const { data: order, refetch, isLoading, error } = useGetOrderDetailsQuery(orderId);
 
   const { user, isDelivered, isPaid, paymentMethod, orderItems, shippingAddress, shippingPrice, taxPrice, totalPrice, itemsPrice } = order || {};
   const { name, email } = user || {};
@@ -19,15 +19,15 @@ const OrderScreen = () => {
 
 
   // ------------------------------------------------------------------------------------------------------------------------
-    //                                                       PayPal LOGIC
+  //                                                       PayPal LOGIC
   // ------------------------------------------------------------------------------------------------------------------------
 
-  const [ payOrder, {isLoading: loadingPay} ] = usePayOrderMutation();
+  const [payOrder, { isLoading: loadingPay }] = usePayOrderMutation();
 
   // Reducer fn
-  const [ {isPending}, paypalDispatch ]= usePayPalScriptReducer();
+  const [{ isPending }, paypalDispatch] = usePayPalScriptReducer();
 
-  const { userInfo } = useSelector((state)=> state.auth);
+  const { userInfo } = useSelector((state) => state.auth);
 
   //Fetching PayPal ClientId
   const { data: paypal, isLoading: loadingPayPal, error: errorPayPal } = useGetPaypalClientIdQuery();
@@ -49,8 +49,8 @@ const OrderScreen = () => {
         });
       };
       console.log('clientId  : ', paypal.clientId);
-      
-      
+
+
       if (order && !isPaid) {
         if (!window.paypal) {
           loadingPayPalScript();
@@ -58,29 +58,29 @@ const OrderScreen = () => {
       }
     }
   }, [errorPayPal, loadingPayPal, paypal, order, paypalDispatch]);
-  
+
   const createOrder = (data, actions) => {
     return actions.order.create({
-      purchase_units :[
+      purchase_units: [
         {
           amount: {
             value: totalPrice.toString()
           }
         }
       ]
-    }).then((orderId)=>{
+    }).then((orderId) => {
       return orderId
     });
 
   }
 
-  const onApprove= (data, actions) => {
-    
+  const onApprove = (data, actions) => {
+
     return actions.order.capture().
       then(async function (details) {
         try {
           // send PUT req. to Backend
-          await payOrder ({ orderId, details })
+          await payOrder({ orderId, details })
 
           //refresh order (i.e data) details
           await refetch();
@@ -92,17 +92,33 @@ const OrderScreen = () => {
   }
 
   const onApproveTest = async () => {
-    const res= await payOrder({orderId, details : { payer: {} }})
+    const res = await payOrder({ orderId, details: { payer: {} } })
     refetch()
     console.log('isPaid : ', isPaid);
     console.log('res : ', res);
-    
-    
+
+
     toast.success("Order is successfully paid")
   }
 
   const onError = (err) => {
     toast.error(err.message)
+  }
+
+  const [deliverOrder, { isLoading: loadingDelivery }] = useDeliverOrderMutation();
+
+  const deliveryHandler = async () => {
+
+    try {
+      console.log(orderId);
+      const delivery = await deliverOrder(orderId).unwrap();
+      console.log(delivery);
+
+      refetch()
+      toast.success("Order delivered!")
+    } catch (error) {
+      toast.error(error?.data?.message || error.message)
+    }
   }
 
   return (
@@ -237,17 +253,18 @@ const OrderScreen = () => {
                       </div>
                     )}
                   </div>
-                  
-                  {/* <div className="mt-6">
-                    {userInfo  && isPaid && !isDelivered && (
-                      <Button
-                        type="button"
+
+                  <div className="mt-6">
+
+                    {loadingDelivery ? <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-500 mx-auto"></div> : (userInfo && userInfo.data.user.isAdmin && isPaid && !isDelivered && (
+                      <button
                         className="w-full py-3 px-5 bg-gray-500 text-gray-100 text-lg font-semibold rounded-lg hover:bg-green-600 transition duration-200"
+                        onClick={deliveryHandler}
                       >
                         Mark As Delivered
-                      </Button>
-                    )}
-                  </div> */}
+                      </button>
+                    ))}
+                  </div>
                   {/* Loading state */}
                   {isLoading && <div className="text-center text-gray-600 mt-4">Loading...</div>}
                 </div>

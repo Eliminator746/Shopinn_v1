@@ -8,34 +8,38 @@ import ShippingScreen from "./screens/ShippingScreen";
 import PaymentScreen from "./screens/PaymentScreen";
 import PlaceOrderScreen from "./screens/PlaceOrderScreen";
 import PrivateRoutes from "./components/PrivateRotues";
-import OrderScreen from "./screens/OrderScreen";
+import OrderScreen from "./screens/Admin/OrderScreen";
 import ProfileScreen from "./screens/ProfileScreen";
 import AdminRoute from "./components/AdminRoute";
 import OrderList from "./screens/OrderList";
+import { PayPalScriptProvider } from "@paypal/react-paypal-js";
+import ProductList from "./screens/Admin/ProductScreen";
 
 export default function App() {
-  return <>
-    <BrowserRouter>
-      <Routes>
-        <Route element={<Layout />}>
-          <Route path="/" element={<HomeScreen />} />
-          <Route path="product/:productId" element={<ProductDetails />} />
-          <Route path="/cart" element={<CartScreen />} />
-          <Route path="/login" element={<LoginScreen />} />
-          <Route path="" element={<PrivateRoutes />}>
-            <Route path="/shipping" element={<ShippingScreen />} />
-            <Route path="/payment" element={<PaymentScreen />} />
-            <Route path="/placeorder" element={< PlaceOrderScreen />} />
-            <Route path="/order/:id" element={< OrderScreen />} />
-            <Route path="/profile" element={< ProfileScreen />} />
-          </Route>
+  return (
+    <PayPalScriptProvider deferLoading={true}>
+      <BrowserRouter>
+        <Routes>
+          <Route element={<Layout />}>
+            <Route path="/" element={<HomeScreen />} />
+            <Route path="product/:productId" element={<ProductDetails />} />
+            <Route path="/cart" element={<CartScreen />} />
+            <Route path="/login" element={<LoginScreen />} />
+            <Route path="" element={<PrivateRoutes />}>
+              <Route path="/shipping" element={<ShippingScreen />} />
+              <Route path="/payment" element={<PaymentScreen />} />
+              <Route path="/placeorder" element={<PlaceOrderScreen />} />
+              <Route path="/order/:id" element={<OrderScreen />} />
+              <Route path="/profile" element={<ProfileScreen />} />
+            </Route>
 
-          <Route path="/admin" element={<AdminRoute />}>
-            <Route path="/admin/orderlist" element={<OrderList />} />
+            <Route path="/admin" element={<AdminRoute />}>
+              <Route path="/admin/orderlist" element={<OrderList />} />
+              <Route path="/admin/productlist" element={<ProductList />} />
+            </Route>
           </Route>
-
-        </Route>
-      </Routes>
-    </BrowserRouter>
-  </>
+        </Routes>
+      </BrowserRouter>
+    </PayPalScriptProvider>
+  );
 }

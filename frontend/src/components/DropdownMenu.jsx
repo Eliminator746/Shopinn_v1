@@ -16,7 +16,7 @@ const DropdownMenu = () => {
     const navigate = useNavigate();
     const [logoutApiCall] = useLogoutMutation();
     // console.log('logoutApiCall : ', logoutApiCall);
-
+    
 
     // Handle clicks outside the dropdown and Escape key
     useEffect(() => {
@@ -70,10 +70,20 @@ const DropdownMenu = () => {
                     {
                         isAdmin && (
                             <li
-                                onClick={() => setIsOpen(false)}
-                                className="px-4 py-2 cursor-pointer hover:bg-gray-100"
+                                onClick={() => {setIsOpen(false); navigate('/admin/orderlist')}}
+                                className="px-4 py-2 cursor-pointer hover:bg-gray-100"                               
                             >
                                 OrderList
+                            </li>
+                        )
+                    }
+                    {
+                        isAdmin && (
+                            <li
+                                onClick={() => {setIsOpen(false); navigate('/admin/productlist')}}
+                                className="px-4 py-2 cursor-pointer hover:bg-gray-100"                               
+                            >
+                                ProductList
                             </li>
                         )
                     }

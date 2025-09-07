@@ -99,10 +99,29 @@ const updateOrderToPaid = asyncHandler(async (req, res) => {
 
 const updateOrderToDelivered = asyncHandler(async (req, res) => {
   console.log('Updating order status to delivered');
+  const updateOrder = await Order.findById( req.params.id );
+  if (updateOrder) {
+    updateOrder.isDelivered = true;
+    updateOrder.deliveredAt = Date.now();
+
+    const updatedOrder = await updateOrder.save();
+    res
+      .status(200)
+      .json(new ApiResponse(200, { updatedOrder }, 'Updated Order'));
+  } else {
+    throw new ApiError(404, 'Order not found');
+  }
+  console.log(updateOrder);
 });
 
 const getOrders = asyncHandler(async (req, res) => {
-  console.log('Getting all orders - admin access');
+  const orders = await Order.find({}).populate('user', '_id name');
+  if (!orders) {
+    throw new ApiError(404, 'No orders found');
+  }
+  return res
+    .status(200)
+    .json(new ApiResponse(200, { orders }, 'Orders fetched successfully'));
 });
 
 export {
