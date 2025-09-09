@@ -24,8 +24,18 @@ export const productsApiSlice = apiSlice.injectEndpoints({
         // body: data, -> We're not passing data bec, in BE it'll create default sample product
       }),
     }),
+    updateProduct: builder.mutation({
+      query: (data) => ({
+        url: `${PRODUCTS_URL}/${data.productId}/product`,
+        method: 'PUT',
+        body: { ...data }
+      }),
+      keepUnusedDataFor: 2,
+      transformResponse: (response) => response.product
+    })
+
   }),
 });
 
-export const { useGetProductsQuery, useGetProductDetailsQuery, useCreateProductMutation } =
+export const { useGetProductsQuery, useGetProductDetailsQuery, useCreateProductMutation, useUpdateProductMutation } =
   productsApiSlice;

@@ -253,6 +253,44 @@ const updateUser = asyncHandler(async(req,res)=>{
   .json(new ApiResponse(200, user, "User Updated successfully"))
 })
 
+// ------------------------------------------------------------------------------------------------------------------------
+//                                                       Image Upload LOGIC
+// ------------------------------------------------------------------------------------------------------------------------
+  // You can only delete users not admin
+// ------------------------------------------------------------------------------------------------------------------------
+
+const uploadImage = asyncHandler(async (req, res) => {
+    // Check if file exists in request
+    if (!req.file) {
+        throw new ApiError(400, "No file uploaded");
+    }
+
+    // Validate file size (optional, as multer can also handle this)
+    const maxSize = 5 * 1024 * 1024; // 5MB
+    if (req.file.size > maxSize) {
+        throw new ApiError(400, "File size too large. Maximum size is 5MB");
+    }
+
+    // Get the file path
+    const filePath = req.file.path.replace(/\\/g, '/'); // Convert Windows backslashes to forward slashes
+
+    return res
+        .status(200)
+        .json(
+            new ApiResponse(
+                200, 
+                { 
+                    image: `/${filePath}`,
+                    filename: req.file.originalname,
+                    mimetype: req.file.mimetype,
+                    size: req.file.size
+                }, 
+                "Image uploaded successfully"
+            )
+        );
+});
+
+
 export {
   registerUser,
   loginUser,
@@ -263,4 +301,5 @@ export {
   getUserById,
   deleteUser,
   updateUser,
+  uploadImage
 };

@@ -1,3 +1,4 @@
+import path from 'path';
 import express from 'express';
 import cors from 'cors';
 import cookieParser from 'cookie-parser';
@@ -23,12 +24,22 @@ app.use(express.urlencoded({extended : true, limit : "16kb"}));
 // extended : true allows to parse the nested object
 
 // Serve static files
-app.use(express.static("public"))
+// app.use(express.static("public"))
 // public is the folder where we store the static files like images, css, pdf, js etc.
 
 
 // Handles the incoming request with cookies
 app.use(cookieParser());
+
+
+
+// __dirname (so we can serve static folder)
+const __dirname = path.resolve();
+console.log('__dirname ', __dirname);
+
+// Serve uploads folder as static
+app.use('/upload123', express.static(path.join(__dirname, '/upload')));
+// http://localhost:8000/upload123/image-1757396794099.png -> Here you can see the image live
 
 // ------------------------------------------------------------------------------------------------------------------------
 
@@ -37,11 +48,13 @@ import productRouter from './src/routes/product.router.js';
 import userRouter from './src/routes/user.router.js'
 import orderRouter from './src/routes/order.router.js'
 import configRouter from './src/routes/config.router.js';
+import multerRouter from './src/routes/multer.router.js'
 
 app.use("/api/v1", productRouter)
 app.use("/api/v1/users", userRouter)
 app.use("/api/v1/orders", orderRouter)
 app.use('/api/config', configRouter);
+app.use('/api/upload', multerRouter)
 
 
 // http://localhost:8000/api/v1/{productRouter}

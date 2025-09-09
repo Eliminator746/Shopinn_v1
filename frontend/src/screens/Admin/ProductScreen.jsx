@@ -1,32 +1,43 @@
 import { FaEdit, FaTrash, FaPlus } from 'react-icons/fa';
+import { useState } from 'react';
 import Message from '../../components/Message';
-import { useGetProductsQuery } from '../../features/productsApiSlice';
+import { useGetProductsQuery, useCreateProductMutation } from '../../features/productsApiSlice';
 import Loader from '../../components/Loader';
 import useAutoHideScroll from '../../hooks/useAutoHideScroll';
-import { useCreateProductMutation } from '../../features/productsApiSlice';
+import SlidePanel from '../../components/common/SlidePanel';
+import ProductForm from '../../components/common/ProductForm';
+import { toast } from 'react-toastify';
 
 const ProductList = () => {
     const { data: products, isLoading, error, refetch } = useGetProductsQuery();
     const [isScrollVisible, setGridRef] = useAutoHideScroll({ hideDelay: 5000 });
+    const [selectedProduct, setSelectedProduct] = useState(null);
+    const [isFormOpen, setIsFormOpen] = useState(false);
 
-    const [createProduct, {isLoading: creatingProductLoader} ] = useCreateProductMutation()
+    const [createProduct, { isLoading: creatingProductLoader }] = useCreateProductMutation();    
 
-    const handleCreateProduct = async() => {
-
-        const product= await createProduct();
-        refetch()
-        console.log(createProduct);    
+    const handleCreateProduct = async () => {
+        try {
+            await createProduct().unwrap();
+            await refetch();
+            toast.success('Product created successfully');
+        } catch (err) {
+            toast.error(err?.data?.message || 'Error creating product');
+        }
     }
+
     return (
         <div className="p-4">
             {/* Header with Create Product button */}
             <div className="flex justify-between items-center mb-8">
                 <h1 className="text-2xl font-semibold text-gray-800">Products</h1>
                 <button
-                    className="flex items-center px-4 py-2 bg-gray-600 text-white rounded hover:bg-gray-700 transition-colors"
+                    className="flex items-center px-4 py-2 bg-gray-600 text-white rounded hover:bg-gray-700 transition-colors disabled:opacity-50"
                     onClick={handleCreateProduct}
+                    disabled={creatingProductLoader}
                 >
-                    <FaPlus className="mr-2" /> Create Product
+                    <FaPlus className="mr-2" /> 
+                    {creatingProductLoader ? 'Creating...' : 'Create Product'}
                 </button>
             </div>
 
@@ -44,6 +55,7 @@ const ProductList = () => {
                         <div>PRICE</div>
                         <div>CATEGORY</div>
                         <div>BRAND</div>
+                        <div className="text-center">ACTIONS</div>
                     </div>
 
                     {/* Grid Body */}
@@ -92,13 +104,15 @@ const ProductList = () => {
                                 <div className="text-gray-600 truncate">{product.brand}</div>
                                 <div className="flex space-x-3 justify-center">
                                     <button
-                                        onClick={() => handleEdit(product._id)}
+                                        onClick={() => {
+                                            setSelectedProduct(product);
+                                            setIsFormOpen(true);
+                                        }}
                                         className="text-blue-600 hover:text-blue-800 transition-colors"
                                     >
                                         <FaEdit className="text-xl" />
                                     </button>
                                     <button
-                                        onClick={() => handleDelete(product._id)}
                                         className="text-red-600 hover:text-red-800 transition-colors"
                                     >
                                         <FaTrash className="text-xl" />
@@ -107,6 +121,27 @@ const ProductList = () => {
                             </div>
                         ))}
                     </div>
+
+                    {/* Slide-in Edit Form */}
+                    <SlidePanel
+                        isOpen={isFormOpen}
+                        onClose={() => {
+                            setIsFormOpen(false);
+                            setSelectedProduct(null);
+                        }}
+                        title="Edit Product"
+                    >
+                        {selectedProduct && (
+                            <ProductForm
+                                product={selectedProduct}
+                                onClose={() => {
+                                    setIsFormOpen(false);
+                                    setSelectedProduct(null);
+                                }}
+                                onSuccess={refetch}
+                            />
+                        )}
+                    </SlidePanel>
                 </>
             )}
         </div>
