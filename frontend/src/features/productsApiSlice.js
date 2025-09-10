@@ -9,6 +9,7 @@ export const productsApiSlice = apiSlice.injectEndpoints({
       }),
       transformResponse: (response) => response.products, // Extract products from the response
       keepUnusedDataFor: 2,
+      providesTags:['Product']
     }),
     getProductDetails: builder.query({
       query: (productId) => ({
@@ -23,6 +24,7 @@ export const productsApiSlice = apiSlice.injectEndpoints({
         method: 'POST',
         // body: data, -> We're not passing data bec, in BE it'll create default sample product
       }),
+      invalidatesTags:['Product']
     }),
     updateProduct: builder.mutation({
       query: (data) => ({
@@ -31,14 +33,16 @@ export const productsApiSlice = apiSlice.injectEndpoints({
         body: { ...data }
       }),
       keepUnusedDataFor: 2,
-      transformResponse: (response) => response.product
+      transformResponse: (response) => response.product,
+      invalidatesTags:['Product']
     }),
     deleteProduct: builder.mutation({
       query:(productId)=>({
         url:`${PRODUCTS_URL}/${productId}`,
         method: 'DELETE',
-      })
-    })
+      }),
+      invalidatesTags:['Product']
+    }),
 
   }),
 });

@@ -14,6 +14,7 @@ import AdminRoute from "./components/AdminRoute";
 import OrderList from "./screens/OrderList";
 import { PayPalScriptProvider } from "@paypal/react-paypal-js";
 import ProductList from "./screens/Admin/ProductScreen";
+import UserListScreen from "./screens/Admin/UserListScreen"
 
 export default function App() {
   return (
@@ -36,6 +37,7 @@ export default function App() {
             <Route path="/admin" element={<AdminRoute />}>
               <Route path="/admin/orderlist" element={<OrderList />} />
               <Route path="/admin/productlist" element={<ProductList />} />
+              <Route path="/admin/userlist" element={<UserListScreen />} />
             </Route>
           </Route>
         </Routes>

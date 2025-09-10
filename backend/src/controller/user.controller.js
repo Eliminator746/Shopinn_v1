@@ -202,9 +202,15 @@ const updateUserProfile = asyncHandler(async(req,res)=>{
   .json(new ApiResponse(200, {user:updatedUser}, 'User updated successfully'));
 })
 
+// @access Private/Admin
 const getUsers = asyncHandler(async(req,res)=>{
   const users = await User.find({});
-  res.json(users);
+  if(!users)
+      throw new ApiError(404, 'User not found')
+
+    res.status(200)
+    .json(new ApiResponse(200, users, "Fetched all the users"))
+
 })
 
 // ------------------------------------------------------------------------------------------------------------------------
@@ -212,6 +218,8 @@ const getUsers = asyncHandler(async(req,res)=>{
 // ------------------------------------------------------------------------------------------------------------------------
   // You can only delete users not admin
 // ------------------------------------------------------------------------------------------------------------------------
+
+// @access Private/Admin
 const deleteUser = asyncHandler(async(req,res)=>{
   const user = await User.findById(req.params.id);
 
@@ -226,6 +234,7 @@ const deleteUser = asyncHandler(async(req,res)=>{
   res.json({ message: 'User removed' });
 })
 
+// @access Private/Admin
 const getUserById = asyncHandler(async(req,res)=>{
   const user = await User.findById(req.params.id).select('-password -refreshToken');
 
@@ -235,6 +244,7 @@ const getUserById = asyncHandler(async(req,res)=>{
   res.json(user);
 })
 
+// @access Private/Admin
 const updateUser = asyncHandler(async(req,res)=>{
   const user = await User.findById(req.params.id).select('-password -refreshToken');
 
@@ -250,7 +260,7 @@ const updateUser = asyncHandler(async(req,res)=>{
 
   res
   .status(200)
-  .json(new ApiResponse(200, user, "User Updated successfully"))
+  .json(new ApiResponse(200, updatedUser, "User Updated successfully"))
 })
 
 // ------------------------------------------------------------------------------------------------------------------------
