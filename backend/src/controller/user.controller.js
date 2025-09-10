@@ -222,11 +222,10 @@ const getUsers = asyncHandler(async(req,res)=>{
 // @access Private/Admin
 const deleteUser = asyncHandler(async(req,res)=>{
   const user = await User.findById(req.params.id);
-
   if(!user)
     throw new ApiError(404, 'User not found')
 
-  if(!user.isAdmin)
+  if(user.isAdmin)
     throw new ApiError(400, 'Can not delete admin user')
 
 

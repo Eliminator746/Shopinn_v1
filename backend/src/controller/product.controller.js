@@ -80,4 +80,57 @@ const deleteProduct = asyncHandler(async (req, res) => {
     .json(new ApiResponse(200, null, 'Product deleted successfully'));
 });
 
-export { getProducts, getProductById, createProduct, updateProduct, deleteProduct };
+
+// ------------------------------------------------------------------------------------------------------------------------
+//                                                          CREATE REVIEWS
+// ------------------------------------------------------------------------------------------------------------------------
+// 1. Comment and rating will come from req.body
+// 2. Product should be there
+// 3. Check if user already reviewed
+// 4. If not present, let them add you review
+// 5. Add numReviews
+// 6. Add rating (overall)
+// 7. Save it to db and return it
+// NOTE -> Added Number() conversion for rating + Added proper type comparison for user IDs using toString()
+// ------------------------------------------------------------------------------------------------------------------------
+
+const createReview = asyncHandler(async (req,res)=> {
+  const {rating, comment}= req.body;
+  const product= await Product.findById(req.params.id);
+
+  if(!product)
+    throw new ApiError(400, "Product doesn't exist")
+
+   // Check if user already reviewed
+  const alreadyReviewdone = product.reviews.find(
+    (r) => r.user.toString() === req.user._id.toString()
+  );
+
+  if(alreadyReviewdone){
+    throw new ApiError(400, "Review already done")
+  }
+  const review={
+    name: req.user.name,
+    rating:  Number(rating),
+    comment,
+    user:req.user._id
+  }
+
+  product.reviews.push(review);
+  
+  product.numReviews = product.reviews.length;
+  product.rating =
+    Math.round(
+      (product.reviews.reduce((acc, item) => acc + item.rating, 0) /
+        product.reviews.length) * 100
+    ) / 100; 
+
+  await product.save();
+
+  return res
+  .status(201)
+  .json(new ApiResponse(201, product, 'Review created successfully'));
+
+})
+
+export { getProducts, getProductById, createProduct, updateProduct, deleteProduct, createReview };

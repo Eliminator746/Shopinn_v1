@@ -21,7 +21,15 @@ const UserListScreen = () => {
     };
 
     const handleDeleteConfirm = async () => {
-        
+        try {
+            await deleteUser(userToDelete._id)
+            await refetch()
+            setUserToDelete(null)
+            setIsDeleteModalOpen(false);
+            toast.success("User deleted successfully")
+        } catch (error) {
+            toast.error(error?.data?.message || error.data)
+        }
     };
 
     return (
@@ -112,7 +120,11 @@ const UserListScreen = () => {
                                         <FaEdit className="text-xl" />
                                     </button>
                                     <button
-                                        className="text-red-600 hover:text-red-800 transition-colors"
+                                       className={`transition-colors text-red-600 ${
+                                            user.isAdmin
+                                            ? "cursor-not-allowed"
+                                            : "hover:text-red-800"
+                                        }`}
                                         onClick={() => handleDeleteClick(user)}
                                         disabled={user.isAdmin}
                                     >
