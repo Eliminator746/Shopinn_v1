@@ -1,11 +1,12 @@
 import { FaEdit, FaTrash, FaPlus } from 'react-icons/fa';
 import { useState } from 'react';
 import Message from '../../components/Message';
-import { useGetProductsQuery, useCreateProductMutation } from '../../features/productsApiSlice';
+import { useGetProductsQuery, useCreateProductMutation, useDeleteProductMutation } from '../../features/productsApiSlice';
 import Loader from '../../components/Loader';
 import useAutoHideScroll from '../../hooks/useAutoHideScroll';
 import SlidePanel from '../../components/common/SlidePanel';
 import ProductForm from '../../components/common/ProductForm';
+import DeleteConfirmationModal from '../../components/common/DeleteConfirmationModal';
 import { toast } from 'react-toastify';
 
 const ProductList = () => {
@@ -13,8 +14,11 @@ const ProductList = () => {
     const [isScrollVisible, setGridRef] = useAutoHideScroll({ hideDelay: 5000 });
     const [selectedProduct, setSelectedProduct] = useState(null);
     const [isFormOpen, setIsFormOpen] = useState(false);
+    const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+    const [productToDelete, setProductToDelete] = useState(null);
 
-    const [createProduct, { isLoading: creatingProductLoader }] = useCreateProductMutation();    
+    const [createProduct, { isLoading: creatingProductLoader }] = useCreateProductMutation();
+    const [deleteProduct, { isLoading: loadingDelete }] = useDeleteProductMutation();
 
     const handleCreateProduct = async () => {
         try {
@@ -24,7 +28,24 @@ const ProductList = () => {
         } catch (err) {
             toast.error(err?.data?.message || 'Error creating product');
         }
-    }
+    };
+
+    const handleDeleteClick = (product) => {
+        setProductToDelete(product);
+        setIsDeleteModalOpen(true);
+    };
+
+    const handleDeleteConfirm = async () => {
+        try {
+            await deleteProduct(productToDelete._id).unwrap();
+            await refetch();
+            toast.success('Product deleted successfully');
+            setIsDeleteModalOpen(false);
+            setProductToDelete(null);
+        } catch (err) {
+            toast.error(err?.data?.message || 'Error deleting product');
+        }
+    };
 
     return (
         <div className="p-4">
@@ -36,7 +57,7 @@ const ProductList = () => {
                     onClick={handleCreateProduct}
                     disabled={creatingProductLoader}
                 >
-                    <FaPlus className="mr-2" /> 
+                    <FaPlus className="mr-2" />
                     {creatingProductLoader ? 'Creating...' : 'Create Product'}
                 </button>
             </div>
@@ -58,12 +79,12 @@ const ProductList = () => {
                         <div className="text-center">ACTIONS</div>
                     </div>
 
+                    {loadingDelete && <Loader />}
                     {/* Grid Body */}
-                    <div 
+                    <div
                         ref={setGridRef}
-                        className={`bg-white rounded-b-lg shadow-sm h-[63vh] overflow-y-auto transition-all duration-300 ${
-                            isScrollVisible ? 'scrollbar-visible' : 'scrollbar-hidden'
-                        }`}
+                        className={`bg-white rounded-b-lg shadow-sm h-[63vh] overflow-y-auto transition-all duration-300 ${isScrollVisible ? 'scrollbar-visible' : 'scrollbar-hidden'
+                            }`}
                     >
                         <style>
                             {`
@@ -114,6 +135,7 @@ const ProductList = () => {
                                     </button>
                                     <button
                                         className="text-red-600 hover:text-red-800 transition-colors"
+                                        onClick={() => handleDeleteClick(product)}
                                     >
                                         <FaTrash className="text-xl" />
                                     </button>
@@ -121,6 +143,17 @@ const ProductList = () => {
                             </div>
                         ))}
                     </div>
+
+                    {/* Delete Confirmation Modal */}
+                    <DeleteConfirmationModal
+                        isOpen={isDeleteModalOpen}
+                        onClose={() => {
+                            setIsDeleteModalOpen(false);
+                            setProductToDelete(null);
+                        }}
+                        onDelete={handleDeleteConfirm}
+                        itemName={productToDelete?.name || ''}
+                    />
 
                     {/* Slide-in Edit Form */}
                     <SlidePanel

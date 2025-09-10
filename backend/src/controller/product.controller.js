@@ -43,24 +43,41 @@ const createProduct = asyncHandler(async (req, res) => {
 
 // Update Product
 const updateProduct = asyncHandler(async (req, res) => {
-  const { productId, name, description, brand, category, price, countInStock } = req.body;
+  const { name, description, brand, category, price, countInStock } = req.body;
 
-  const product = await Product.findById(productId);
+  const product = await Product.findById(req.params.id);
 
-  if (product) {
-    product.name = name;
-    product.description = description;
-    product.brand = brand;
-    product.category = category;
-    product.price = price;
-    product.countInStock = countInStock;
+  if (!product) {
+    throw new ApiError(404, 'Product not found');
   }
+
+  product.name = name || product.name;
+  product.description = description || product.description;
+  product.brand = brand || product.brand;
+  product.category = category || product.category;
+  product.price = price || product.price;
+  product.countInStock = countInStock || product.countInStock;
 
   const updatedProduct = await product.save();
 
   return res
     .status(200)
-    .json(new ApiResponse(200, updatedProduct, 'Product Data Updated'));
+    .json(new ApiResponse(200, updatedProduct, 'Product Updated Successfully'));
 });
 
-export { getProducts, getProductById, createProduct, updateProduct };
+// Delete Product
+const deleteProduct = asyncHandler(async (req, res) => {
+  const product = await Product.findById(req.params.productId);
+
+  if (!product) {
+    throw new ApiError(404, 'Product not found');
+  }
+
+  await Product.deleteOne({ _id: product._id });
+
+  return res
+    .status(200)
+    .json(new ApiResponse(200, null, 'Product deleted successfully'));
+});
+
+export { getProducts, getProductById, createProduct, updateProduct, deleteProduct };
