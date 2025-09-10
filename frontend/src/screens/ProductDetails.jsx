@@ -2,29 +2,57 @@ import React, { useState } from 'react'
 import { useParams } from 'react-router-dom'
 import { useSelector, useDispatch } from 'react-redux';
 import Rating from '../components/Rating';
-import { FaArrowLeft } from "react-icons/fa";
+import { FaArrowLeft, FaStar } from "react-icons/fa";
 import { Link } from 'react-router-dom';
-import { useGetProductDetailsQuery } from '../features/productsApiSlice.js'
+import { useGetProductDetailsQuery, useCreateReviewMutation } from '../features/productsApiSlice.js'
 import Message from '../components/Message'
 import { addToCart } from '../features/cartSlice.js'
+import { toast } from 'react-toastify';
 import { useNavigate } from 'react-router-dom'
+import Loader from '../components/Loader.jsx';
 
 
 const ProductDetails = () => {
 
     const { productId } = useParams();
-    const { data: product, isLoading, error } = useGetProductDetailsQuery(productId); // productId comes from useParams
-    
-    const [quantity, setQuantity] = useState(1)
-    const dispatch = useDispatch()
-    const navigate= useNavigate()
+    const { data: product, isLoading, error, refetch } = useGetProductDetailsQuery(productId); // productId comes from useParams
+    const { userInfo } = useSelector((state) => state.auth);
 
 
-    const cart = useSelector((state) => console.log(state.cart.cartItems));
+    const [quantity, setQuantity] = useState(1);
+    const [rating, setRating] = useState('');
+    const [comment, setComment] = useState('');
+
+    const dispatch = useDispatch();
+    const navigate = useNavigate();
+
+    const [createReview, { isLoading: loadingProductReview }] = useCreateReviewMutation();
+
+    const submitHandler = async (e) => {
+        e.preventDefault();
+
+        try {
+            await createReview({
+                productId: productId,
+                rating,
+                comment,
+            }).unwrap();
+            toast.success('Review submitted successfully');
+            setRating('');
+            setComment('');
+            refetch();
+        } catch (err) {
+            toast.error(err?.data?.message || err.error);
+        }
+    };
     const addToCartHandler = () => {
         dispatch(addToCart({ ...product, quantity }))
         navigate('/cart')
     }
+
+    const alreadyReview = product?.reviews.find(
+        (review) => review.user.toString() === userInfo.data.user._id.toString()
+    );
 
     return (
         <div className='flex flex-col gap-4 p-6'>
@@ -112,9 +140,82 @@ ${!product.countInStock ? 'bg-gray-400 cursor-not-allowed' : 'hover:bg-indigo-70
                             </table>
                         </div>
                     </div>
+
+                    {/* Reviews Section */}
+                    {loadingProductReview && <Loader />}
+                    <div className="mt-12 grid grid-cols-1 md:grid-cols-2 gap-8">
+                        {/* Reviews List */}
+                        <div className="bg-white rounded-lg shadow-md p-6">
+                            <h2 className="text-2xl font-semibold mb-4">Reviews</h2>
+                            {product.reviews.length === 0 ? (
+                                <Message>No Reviews</Message>
+                            ) : (
+                                <div className="space-y-4">
+                                    {product.reviews.map((review) => (
+                                        <div key={review._id} className="border-b pb-4">
+                                            <div className="flex items-center mb-1">
+                                                <strong className="text-gray-700">{review.name}</strong>
+                                            </div>
+                                            <Rating value={review.rating} />
+                                            <p className="text-gray-600 mt-2">{review.comment}</p>
+                                            <p className="text-gray-400 text-sm mt-1">
+                                                {new Date(review.createdAt).toLocaleDateString()}
+                                            </p>
+                                        </div>
+                                    ))}
+                                </div>
+                            )}
+                        </div>
+
+                        {/* Write a Review Form */}
+                        {userInfo && !alreadyReview && (
+                            <div className="bg-white rounded-lg shadow-md p-6">
+                                <h2 className="text-2xl font-semibold mb-4">Write a Review</h2>
+                                <form onSubmit={submitHandler}>
+                                    <div className="mb-4">
+                                        <label className="block text-gray-700 font-semibold mb-2">
+                                            Rating
+                                        </label>
+                                        <select
+                                            value={rating}
+                                            onChange={(e) => setRating(e.target.value)}
+                                            className="w-full p-2 border rounded-lg focus:ring-2 focus:ring-indigo-500"
+                                            required
+                                        >
+                                            <option value="">Select...</option>
+                                            <option value="1">1 - Poor</option>
+                                            <option value="2">2 - Fair</option>
+                                            <option value="3">3 - Good</option>
+                                            <option value="4">4 - Very Good</option>
+                                            <option value="5">5 - Excellent</option>
+                                        </select>
+                                    </div>
+
+                                    <div className="mb-4">
+                                        <label className="block text-gray-700 font-semibold mb-2">
+                                            Comment
+                                        </label>
+                                        <textarea
+                                            rows="3"
+                                            value={comment}
+                                            onChange={(e) => setComment(e.target.value)}
+                                            className="w-full p-2 border rounded-lg focus:ring-2 focus:ring-indigo-500"
+                                            required
+                                        ></textarea>
+                                    </div>
+
+                                    <button
+                                        type="submit"
+                                        className="w-full bg-indigo-600 text-white py-2 px-4 rounded-lg hover:bg-indigo-700 transition duration-200"
+                                    >
+                                        Submit Review
+                                    </button>
+                                </form>
+                            </div>
+                        )}
+                    </div>
                 </>
             )}
-
         </div>
     );
 }
