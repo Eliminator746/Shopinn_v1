@@ -11,6 +11,7 @@ router.route('/products').get(getProducts).post(verifyJWT, admin, createProduct)
 router.route('/products/:productId').get(getProductById).delete(verifyJWT, admin, deleteProduct);
 
 // Update product
-router.route('/products/:id/product').put(verifyJWT, admin, updateProduct).post(verifyJWT, createReview)
+router.route('/products/:id/product').put(verifyJWT, admin, updateProduct)
+router.route('/products/:id/reviews').post(verifyJWT, createReview)
 
 export default router;

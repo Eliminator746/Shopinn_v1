@@ -23,6 +23,7 @@ export default function App() {
         <Routes>
           <Route element={<Layout />}>
             <Route path="/" element={<HomeScreen />} />
+            <Route path="/page/:pageNumber" element={<HomeScreen />} />
             <Route path="product/:productId" element={<ProductDetails />} />
             <Route path="/cart" element={<CartScreen />} />
             <Route path="/login" element={<LoginScreen />} />
@@ -37,6 +38,7 @@ export default function App() {
             <Route path="/admin" element={<AdminRoute />}>
               <Route path="/admin/orderlist" element={<OrderList />} />
               <Route path="/admin/productlist" element={<ProductList />} />
+              <Route path="/admin/productlist/:pageNumber" element={<ProductList />} />
               <Route path="/admin/userlist" element={<UserListScreen />} />
             </Route>
           </Route>

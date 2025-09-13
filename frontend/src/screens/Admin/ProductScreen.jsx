@@ -8,9 +8,13 @@ import SlidePanel from '../../components/common/SlidePanel';
 import ProductForm from '../../components/common/ProductForm';
 import DeleteConfirmationModal from '../../components/common/DeleteConfirmationModal';
 import { toast } from 'react-toastify';
+import { useParams } from 'react-router-dom';
+import Paginate from '../../components/Pagination';
 
 const ProductList = () => {
-    const { data: products, isLoading, error, refetch } = useGetProductsQuery();
+
+    const { pageNumber } = useParams()
+    const { data, isLoading, error, refetch } = useGetProductsQuery({pageNumber, isAdmin: true});
     const [isScrollVisible, setGridRef] = useAutoHideScroll({ hideDelay: 5000 });
     const [selectedProduct, setSelectedProduct] = useState(null);
     const [isFormOpen, setIsFormOpen] = useState(false);
@@ -83,7 +87,7 @@ const ProductList = () => {
                     {/* Grid Body */}
                     <div
                         ref={setGridRef}
-                        className={`bg-white rounded-b-lg shadow-sm h-[63vh] overflow-y-auto transition-all duration-300 ${isScrollVisible ? 'scrollbar-visible' : 'scrollbar-hidden'
+                        className={`bg-white rounded-b-lg shadow-sm h-[53vh] overflow-y-auto transition-all duration-300 ${isScrollVisible ? 'scrollbar-visible' : 'scrollbar-hidden'
                             }`}
                     >
                         <style>
@@ -112,7 +116,7 @@ const ProductList = () => {
                                 }
                             `}
                         </style>
-                        {products?.map((product) => (
+                        {data?.products?.map((product) => (
                             <div
                                 key={product._id}
                                 className="grid gap-4 p-4 border-b border-gray-100 hover:bg-gray-50 transition-colors items-center"
@@ -143,6 +147,8 @@ const ProductList = () => {
                             </div>
                         ))}
                     </div>
+
+                    <Paginate page={data.page} pages={data.pages} isAdmin={true} />
 
                     {/* Delete Confirmation Modal */}
                     <DeleteConfirmationModal

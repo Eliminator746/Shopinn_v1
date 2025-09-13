@@ -4,10 +4,14 @@ import { apiSlice } from './apiSlice.js';
 export const productsApiSlice = apiSlice.injectEndpoints({
   endpoints: (builder) => ({
     getProducts: builder.query({
-      query: () => ({
+      query: ({pageNumber, isAdmin}) => ({
         url: PRODUCTS_URL,
+        params:{
+          pageNumber,
+          isAdmin,
+        }
       }),
-      transformResponse: (response) => response.products, // Extract products from the response
+      // transformResponse : Not req. every data is required not only products
       keepUnusedDataFor: 2,
       providesTags:['Product']
     }),
@@ -45,7 +49,7 @@ export const productsApiSlice = apiSlice.injectEndpoints({
     }),
     createReview: builder.mutation({
       query: (data) => ({
-        url: `${PRODUCTS_URL}/${data.productId}/product`,
+        url: `${PRODUCTS_URL}/${data.productId}/reviews`,
         method: 'POST',
         body: data,
       }),

@@ -3,11 +3,28 @@ import { ApiError } from '../utils/ApiError.js';
 import { ApiResponse } from '../utils/ApiResponse.js';
 import { asyncHandler } from '../utils/asyncHandler.js';
 
+// ------------------------------------------------------------------------------------------------------------------------
+//                                                          GET PRODUCTS + PAGINATION included
+// ------------------------------------------------------------------------------------------------------------------------
+// 1. 
+// 2. 
+// 3. 
+// 4. 
+// 5. 
+// 6. 
+// 7. 
+// NOTE -> 
+// ------------------------------------------------------------------------------------------------------------------------
 const getProducts = asyncHandler(async (req, res) => {
-  const products = await Product.find();
+  const isAdmin = req.query.isAdmin === 'true';
+  const pageSize = isAdmin ? 10 : 8; // 10 items per page for admin, 8 for home screen
+  const page = Number(req.query.pageNumber) || 1
+  const count = await Product.countDocuments()
+
+  const products = await Product.find({}).limit(pageSize).skip(pageSize * (page-1));
   if (!products) throw new ApiError(500, 'Failed to fetch products');
 
-  return res.status(200).json({ products });
+  return res.status(200).json({ products, page, pages:Math.ceil(count/pageSize) });
 });
 
 const getProductById = asyncHandler(async (req, res) => {
