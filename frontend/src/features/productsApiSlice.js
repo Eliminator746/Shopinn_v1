@@ -4,11 +4,12 @@ import { apiSlice } from './apiSlice.js';
 export const productsApiSlice = apiSlice.injectEndpoints({
   endpoints: (builder) => ({
     getProducts: builder.query({
-      query: ({pageNumber, isAdmin}) => ({
+      query: ({pageNumber, isAdmin, keyword}) => ({
         url: PRODUCTS_URL,
         params:{
           pageNumber,
           isAdmin,
+          keyword,
         }
       }),
       // transformResponse : Not req. every data is required not only products

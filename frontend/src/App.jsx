@@ -23,7 +23,9 @@ export default function App() {
         <Routes>
           <Route element={<Layout />}>
             <Route path="/" element={<HomeScreen />} />
+            <Route path="/search/:keyword" element={<HomeScreen />} />
             <Route path="/page/:pageNumber" element={<HomeScreen />} />
+            <Route path="/page/:pageNumber/search/:keyword" element={<HomeScreen />} />
             <Route path="product/:productId" element={<ProductDetails />} />
             <Route path="/cart" element={<CartScreen />} />
             <Route path="/login" element={<LoginScreen />} />

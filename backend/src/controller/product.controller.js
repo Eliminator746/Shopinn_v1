@@ -17,11 +17,14 @@ import { asyncHandler } from '../utils/asyncHandler.js';
 // ------------------------------------------------------------------------------------------------------------------------
 const getProducts = asyncHandler(async (req, res) => {
   const isAdmin = req.query.isAdmin === 'true';
-  const pageSize = isAdmin ? 10 : 8; // 10 items per page for admin, 8 for home screen
+  const keyword = req.query.keyword ? { name: { $regex: req.query.keyword, $options: "i" } } : {}
+  
+  const pageSize = isAdmin ? 10 : 1; // 10 items per page for admin, 8 for home screen
+  
   const page = Number(req.query.pageNumber) || 1
-  const count = await Product.countDocuments()
+  const count = await Product.countDocuments({...keyword})
 
-  const products = await Product.find({}).limit(pageSize).skip(pageSize * (page-1));
+  const products = await Product.find({...keyword}).limit(pageSize).skip(pageSize * (page-1));
   if (!products) throw new ApiError(500, 'Failed to fetch products');
 
   return res.status(200).json({ products, page, pages:Math.ceil(count/pageSize) });

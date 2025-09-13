@@ -1,7 +1,7 @@
 import { FaChevronLeft, FaChevronRight } from 'react-icons/fa';
 import { Link } from 'react-router-dom';
 
-const Paginate = ({ pages, page, isAdmin = false }) => {
+const Paginate = ({ pages, page, isAdmin = false, keyword='' }) => {
     return (
         <div className="flex items-center justify-center mt-8 mb-2">
             <div className="relative z-0 inline-flex rounded-md shadow-sm -space-x-px">
@@ -21,7 +21,7 @@ const Paginate = ({ pages, page, isAdmin = false }) => {
                 {[...Array(pages).keys()].map((x) => (
                     <Link
                         key={x + 1}
-                        to={ !isAdmin ? `/page/${x+1}`  : `/admin/productlist/${x+1}` }
+                        to={ !isAdmin ? keyword ? `/page/${x+1}/search/${keyword}` : `/page/${x+1}`  : `/admin/productlist/${x+1}` }
                         className={`relative inline-flex items-center px-4 py-2 border text-sm font-medium
                             ${x + 1 === page
                                 ? 'z-10 bg-indigo-50 border-indigo-500 text-indigo-600'
