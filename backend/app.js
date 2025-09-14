@@ -59,4 +59,30 @@ app.use('/api/upload', multerRouter)
 
 // http://localhost:8000/api/v1/{productRouter}
 
-export default app; 
+// Serve frontend in production
+if (process.env.NODE_ENV === 'production') {
+  // Set frontend build folder as static
+  app.use(express.static(path.join(__dirname, '/frontend/dist')));
+
+  // Serve index.html for any route not starting with /api
+  app.get('*', (req, res) => {
+    res.sendFile(path.resolve(__dirname, 'frontend', 'dist', 'index.html'));
+  });
+} else {
+  app.get('/', (req, res) => {
+    res.send('API is running....');
+  });
+}
+
+// Error handling middleware
+app.use((err, req, res, next) => {
+  const statusCode = err.statusCode || 500;
+  const message = err.message || 'Internal Server Error';
+  return res.status(statusCode).json({
+    success: false,
+    statusCode,
+    message,
+  });
+});
+
+export default app;

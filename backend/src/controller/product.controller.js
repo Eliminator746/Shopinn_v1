@@ -19,7 +19,7 @@ const getProducts = asyncHandler(async (req, res) => {
   const isAdmin = req.query.isAdmin === 'true';
   const keyword = req.query.keyword ? { name: { $regex: req.query.keyword, $options: "i" } } : {}
   
-  const pageSize = isAdmin ? 10 : 8; // 10 items per page for admin, 8 for home screen
+  const pageSize = isAdmin ? process.env.PAGINATION_LIMIT_LIST : process.env.PAGINATION_LIMIT_HOME; // 10 items per page for admin, 8 for home screen
   
   const page = Number(req.query.pageNumber) || 1
   const count = await Product.countDocuments({...keyword})
