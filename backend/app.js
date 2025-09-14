@@ -9,8 +9,10 @@ const app = express();
 //                                                          Middleware
 // ------------------------------------------------------------------------------------------------------------------------
 app.use(cors({
-    origin : process.env.CORS_ORIGIN,   
-    credentials : true
+    origin: process.env.NODE_ENV === 'production' 
+        ? process.env.RENDER_EXTERNAL_URL 
+        : process.env.CORS_ORIGIN,
+    credentials: true
 }));
 // CORS_ORIGIN=* : This was creating issue, bec of this I was getting token undefined
 // CORS_ORIGIN=http://localhost:5173, this fixes the issue. With credentials true, specify specific ORIGIN url
