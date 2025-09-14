@@ -2,8 +2,9 @@ import React, { useMemo } from 'react';
 import { useGetProductsQuery } from '../features/productsApiSlice.js';
 import Product from '../components/Product';
 import Message from '../components/Message';
-import { useParams } from 'react-router-dom';
+import { Link, useParams } from 'react-router-dom';
 import Paginate from '../components/Pagination';
+import { FaArrowLeft } from 'react-icons/fa';
 
 
 
@@ -29,6 +30,14 @@ const HomeScreen = () => {
                 <Message variant='danger'>{error?.data?.message || error.error}</Message>
             ) : (
                 <>
+                    {keyword && <div className='flex justify-start'>
+                        <Link to='/'
+                            className="p-4 flex items-center gap-1 text-lg text-indigo-600 hover:text-indigo-800 font-semibold"
+                        >
+                            <FaArrowLeft /> Back
+                        </Link>
+                    </div>}
+
                     <div className="text-3xl font-semibold text-gray-800 pt-4 pl-4">
                         Latest Product
                     </div>
@@ -37,10 +46,10 @@ const HomeScreen = () => {
                         {renderedProducts}
                     </div>
                     {data.pages > 1 && (
-                        <Paginate 
-                            pages={data.pages} 
-                            page={data.page} 
-                            keyword={keyword ? keyword : ''} 
+                        <Paginate
+                            pages={data.pages}
+                            page={data.page}
+                            keyword={keyword ? keyword : ''}
                         />
                     )}
                 </>

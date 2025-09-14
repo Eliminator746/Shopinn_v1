@@ -2,6 +2,7 @@ import { FaShoppingCart, FaUser } from 'react-icons/fa';
 import { NavLink } from 'react-router-dom';
 import { useSelector } from 'react-redux'
 import { DropdownMenu } from "../components/DropdownMenu";
+import Search from './Search';
 
 const Header = () => {
 
@@ -18,6 +19,7 @@ const Header = () => {
       <NavLink className='font-bold text-2xl tracking-wider cursor-pointer transition duration-100 ease-in-out hover:scale-110' to='/'>Shoppinn</NavLink>
 
       <ul className='flex space-x-6 items-center'>
+        <Search />
         <li className='navbar-item'>
           <NavLink to='/cart' className="relative">
             <FaShoppingCart className="text-xl" />
