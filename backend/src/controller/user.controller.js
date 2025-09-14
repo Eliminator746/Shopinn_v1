@@ -13,10 +13,11 @@ import { UserValidationSchema } from '../schema/userValidationSchema.js';
 // 3. check if user already exists
 // 4. Before storing in db hash password
 // 5. create user obj. i.e store in db
-// 6. remove password and refresh token from response
-// 7. Check for user creation
-// 8. Send response to frontend
-
+// 6. Generate access and refresh token and update user with refresh token
+// 7. Send cookies to frontend
+// 8. Check for user creation + remove password and refresh token from response
+// 9. Send response to frontend
+// Backend return a access token (or session info) immediately after a successful registration. This way, the user doesn’t have to register → then log in again just to get access.
 // ------------------------------------------------------------------------------------------------------------------------
 
 const registerUser = asyncHandler(async (req, res) => {
@@ -42,7 +43,18 @@ const registerUser = asyncHandler(async (req, res) => {
     password,
   });
 
-  // 6-7. Check for user creation + remove password and refresh token from response
+  // 6. Generate access and refresh token and update user with refresh token
+  const { accessToken, refreshToken } = await generateAccessAndRefreshTokens(
+    user._id
+  );
+
+  // 7. Send cookies to frontend
+  const options = {
+    httpOnly: true,
+    secure: process.env.NODE_ENV !== 'development',
+  };
+  
+  // 8. Check for user creation + remove password and refresh token from response
   const createdUser = await User.findById(user._id).select(
     '-password -refreshToken'
   );
@@ -52,12 +64,17 @@ const registerUser = asyncHandler(async (req, res) => {
       .status(500)
       .json({ success: false, message: 'Failed to create user' });
 
-  // 8. Send response to frontend
-  res.status(201).json({
-    success: true,
-    createdUser,
-    message: 'User registered successfully',
-  });
+  // 9. Send response to frontend
+  res.status(201)
+    .cookie('accessToken', accessToken, options)
+    .cookie('refreshToken', refreshToken, options)
+    .json(
+    new ApiResponse(
+      201,
+      { user: createdUser },
+      'User registered successfully'
+    )
+  );
 });
 
 // ------------------------------------------------------------------------------------------------------------------------

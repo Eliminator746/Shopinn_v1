@@ -56,6 +56,7 @@ const PlaceOrderScreen = () => {
 
             // console.log('res_id : ', res.data._id); Check network tab in response -> You'll get how to get specific value 
             navigate(`/order/${res.data._id}`)
+            dispatch(clearCartItems())
             // dispatch(clearCartItems())
             toast.success('Order created successfully!');
 

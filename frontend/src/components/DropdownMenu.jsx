@@ -16,7 +16,7 @@ const DropdownMenu = () => {
     const navigate = useNavigate();
     const [logoutApiCall] = useLogoutMutation();
     // console.log('logoutApiCall : ', logoutApiCall);
-    
+
 
     // Handle clicks outside the dropdown and Escape key
     useEffect(() => {
@@ -62,7 +62,7 @@ const DropdownMenu = () => {
             {isOpen && (
                 <ul className="absolute right-0 mt-1 w-48 bg-white border border-gray-300 rounded-md shadow-md">
                     <li
-                        onClick={() => setIsOpen(false)}
+                        onClick={() => { setIsOpen(false); navigate('/profile') }}
                         className="px-4 py-2 cursor-pointer hover:bg-gray-100"
                     >
                         Profile
@@ -71,7 +71,7 @@ const DropdownMenu = () => {
                         isAdmin && (
                             <li
                                 onClick={() => {setIsOpen(false); navigate('/admin/orderlist')}}
-                                className="px-4 py-2 cursor-pointer hover:bg-gray-100"                               
+                                className="px-4 py-2 cursor-pointer hover:bg-gray-100"
                             >
                                 OrderList
                             </li>
@@ -81,7 +81,7 @@ const DropdownMenu = () => {
                         isAdmin && (
                             <li
                                 onClick={() => {setIsOpen(false); navigate('/admin/productlist')}}
-                                className="px-4 py-2 cursor-pointer hover:bg-gray-100"                               
+                                className="px-4 py-2 cursor-pointer hover:bg-gray-100"
                             >
                                 ProductList
                             </li>
@@ -91,7 +91,7 @@ const DropdownMenu = () => {
                         isAdmin && (
                             <li
                                 onClick={() => {setIsOpen(false); navigate('/admin/userlist')}}
-                                className="px-4 py-2 cursor-pointer hover:bg-gray-100"                               
+                                className="px-4 py-2 cursor-pointer hover:bg-gray-100"
                             >
                                 UserList
                             </li>
