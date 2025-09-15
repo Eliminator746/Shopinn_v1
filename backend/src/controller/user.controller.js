@@ -220,14 +220,51 @@ const updateUserProfile = asyncHandler(async(req,res)=>{
 })
 
 // @access Private/Admin
-const getUsers = asyncHandler(async(req,res)=>{
-  const users = await User.find({});
-  if(!users)
-      throw new ApiError(404, 'User not found')
+const getUsers = asyncHandler(async(req, res) => {
+  const { 
+    search = '', 
+    sortBy = 'newest',
+    filterAdmin 
+  } = req.query;
 
-    res.status(200)
-    .json(new ApiResponse(200, users, "Fetched all the users"))
+  // Build query
+  const query = {};
+  
+  // Search functionality
+  if (search) {
+    query.$or = [
+      { name: { $regex: search, $options: 'i' } },
+      { email: { $regex: search, $options: 'i' } }
+    ];
+  }
 
+  // Filter by admin status
+  if (filterAdmin !== undefined && filterAdmin !== '') {
+    query.isAdmin = filterAdmin === 'true';
+  }
+
+  // Define sort options
+  const sortOptions = {
+    nameAsc: { name: 1 },
+    nameDesc: { name: -1 },
+    newest: { createdAt: -1 },
+    oldest: { createdAt: 1 },
+    recentlyUpdated: { updatedAt: -1 },
+    leastRecentlyUpdated: { updatedAt: 1 }
+  };
+
+  const sortOption = sortOptions[sortBy] || sortOptions.newest;
+
+  const users = await User.find(query)
+    .sort(sortOption)
+    .select('-password -refreshToken');
+
+  if (!users.length) {
+    return res.status(200).json(new ApiResponse(200, [], "No users found"));
+  }
+
+  res.status(200)
+    .json(new ApiResponse(200, users, "Users fetched successfully"));
 })
 
 // ------------------------------------------------------------------------------------------------------------------------

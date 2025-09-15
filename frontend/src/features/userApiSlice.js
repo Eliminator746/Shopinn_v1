@@ -32,8 +32,13 @@ export const userApiSlice = apiSlice.injectEndpoints({
       })
     }),
     getUsers: builder.query({
-      query: ()=> ({
-        url:`${USERS_URL}`,
+      query: (params = {}) => ({
+        url: `${USERS_URL}`,
+        params: {
+          search: params.search || '',
+          sortBy: params.sortBy || 'newest',
+          filterAdmin: params.filterAdmin, // Remove the || '' to allow false values
+        },
       }),
       keepUnusedDataFor: 2,
       transformResponse: (response) => response.data,

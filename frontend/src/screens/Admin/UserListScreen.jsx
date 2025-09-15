@@ -1,17 +1,57 @@
-import { FaEdit, FaTrash, FaCheck, FaTimes } from 'react-icons/fa';
-import { useState } from 'react';
+import { FaEdit, FaTrash, FaCheck, FaTimes, FaSearch } from 'react-icons/fa';
+import { useState, useEffect, useCallback } from 'react';
 import Message from '../../components/Message';
 import { useGetUsersQuery, useDeleteUserMutation } from '../../features/userApiSlice';
 import Loader from '../../components/Loader';
 import useAutoHideScroll from '../../hooks/useAutoHideScroll';
 import DeleteConfirmationModal from '../../components/common/DeleteConfirmationModal';
 import { toast } from 'react-toastify';
+import debounce from 'lodash/debounce';
 
 const UserListScreen = () => {
-    const { data: users, isLoading, error, refetch } = useGetUsersQuery();
+    const [searchTerm, setSearchTerm] = useState('');
+    const [sortBy, setSortBy] = useState('newest');
+    const [filterAdmin, setFilterAdmin] = useState('');
+    const [queryParams, setQueryParams] = useState({
+        search: '',
+        sortBy: 'newest',
+        filterAdmin: ''
+    });
+
+    const { data: users, isLoading, error, refetch } = useGetUsersQuery(queryParams);
     const [isScrollVisible, setGridRef] = useAutoHideScroll({ hideDelay: 5000 });
     const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
     const [userToDelete, setUserToDelete] = useState(null);
+
+    // Debounced search function
+    const debouncedSearch = useCallback(
+        debounce((value) => {
+            setQueryParams(prev => ({ ...prev, search: value }));
+        }, 500),
+        []
+    );
+
+    const handleSearchChange = (e) => {
+        const value = e.target.value;
+        setSearchTerm(value);
+        debouncedSearch(value);
+    };
+
+    const handleSortChange = (e) => {
+        const value = e.target.value;
+        setSortBy(value);
+        setQueryParams(prev => ({ ...prev, sortBy: value }));
+    };
+
+    const handleFilterChange = (e) => {
+        const value = e.target.value;
+        setFilterAdmin(value);
+        setQueryParams(prev => ({
+            ...prev,
+            filterAdmin: value // This will be 'true', 'false', or ''
+        }));
+        refetch(); // Force a refetch when filter changes
+    };
 
     const [deleteUser, { isLoading: loadingDelete }] = useDeleteUserMutation();
 
@@ -35,8 +75,54 @@ const UserListScreen = () => {
     return (
         <div className="p-4">
             {/* Header */}
-            <div className="flex justify-between items-center mb-8">
-                <h1 className="text-2xl font-semibold text-gray-800">Users</h1>
+            <div className="space-y-4 mb-8">
+                <div className="flex justify-between items-center">
+                    <h1 className="text-2xl font-semibold text-gray-800">Users</h1>
+                </div>
+                
+                {/* Search, Sort, and Filter Controls */}
+                <div className="flex flex-col sm:flex-row gap-4">
+                    {/* Search Input */}
+                    <div className="relative flex-1">
+                        <input
+                            type="text"
+                            placeholder="Search by name or email..."
+                            value={searchTerm}
+                            onChange={handleSearchChange}
+                            className="w-full pl-10 pr-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-200 bg-white"
+                        />
+                        <FaSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
+                    </div>
+
+                    {/* Sort Dropdown */}
+                    <div className="min-w-[200px]">
+                        <select
+                            value={sortBy}
+                            onChange={handleSortChange}
+                            className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-200 bg-white"
+                        >
+                            <option value="nameAsc">Name (A → Z)</option>
+                            <option value="nameDesc">Name (Z → A)</option>
+                            <option value="newest">Newest Created</option>
+                            <option value="oldest">Oldest Created</option>
+                            <option value="recentlyUpdated">Recently Updated</option>
+                            <option value="leastRecentlyUpdated">Earliest Updated</option>
+                        </select>
+                    </div>
+
+                    {/* Filter Dropdown */}
+                    <div className="min-w-[180px]">
+                        <select
+                            value={filterAdmin}
+                            onChange={handleFilterChange}
+                            className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-200 bg-white"
+                        >
+                            <option value="">All Users</option>
+                            <option value="true">Admins Only</option>
+                            <option value="false">Regular Users</option>
+                        </select>
+                    </div>
+                </div>
             </div>
 
             {isLoading ? (

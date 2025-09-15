@@ -25,6 +25,7 @@ coverage
 
 FRONTEND.md
 FILE_UPLOAD_DOCUMENTATION.md
+SEARCH_SORT_FILTER_GUIDE.md
 # nyc test coverage
 .nyc_output
 
