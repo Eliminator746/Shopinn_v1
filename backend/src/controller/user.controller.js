@@ -245,8 +245,8 @@ const getUsers = asyncHandler(async(req, res) => {
 
   // Define sort options
   const sortOptions = {
-    nameAsc: { name: 1 },
-    nameDesc: { name: -1 },
+    nameAsc: { name: -1 },
+    nameDesc: { name: 1 },
     newest: { createdAt: -1 },
     oldest: { createdAt: 1 },
     recentlyUpdated: { updatedAt: -1 },
