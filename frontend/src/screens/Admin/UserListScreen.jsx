@@ -6,7 +6,7 @@ import Loader from '../../components/Loader';
 import useAutoHideScroll from '../../hooks/useAutoHideScroll';
 import DeleteConfirmationModal from '../../components/common/DeleteConfirmationModal';
 import { toast } from 'react-toastify';
-import debounce from 'lodash/debounce';
+import { debounce } from 'lodash';
 
 const UserListScreen = () => {
     const [searchTerm, setSearchTerm] = useState('');
